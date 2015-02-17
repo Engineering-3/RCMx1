@@ -1,0 +1,439 @@
+                       RCMx1 Commands
+                       
+        For RCMx1 firmware version 0x09 - 05/02/2014
+    Written by Brian Schmalz of Logic PD for Tim Jump of Engineering^3.
+
+    Copyright 2015 Engineering^3 Copyright and related rights are licensed 
+    under the Solderpad Hardware License, Version 0.51 (the “License”); you 
+    may not use this file except in compliance with the License. You may 
+    obtain a copy of the License at http://solderpad.org/licenses/SHL-0.51. 
+    Unless required by applicable law or agreed to in writing, software, 
+    hardware and materials distributed under this License is distributed on 
+    an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either 
+    express or implied. See the License for the specific language governing 
+    permissions and limitations under the License.
+    
+:::General:::
+    
+This document describes the various software features of the RCMx1 board and 
+firmware that are accessible via I2C register reads and writes.
+
+The RCMx1 has one communications channel to the Blackfin processor: I2C
+
+The Blackfin sends I2C commands to the RCMx1 and some commands generate I2C 
+responses as well. Blackfin is always I2C master, RCMx1 is always I2C slave.
+
+Notes about RCMx1:
+
+* Almost all of the pins on the RCMx1 can be used as GPIO pins. All pins that
+    can be used as GPIO are numbered 1 through 28, and are referred to in this
+    document as PN1 through PN28.
+* There are 8 I/O pins that can be used as RC servo outputs. For this document, 
+    these are called RC Servo outputs, and are PN1 to PN8.
+* There are 14 I/O pins that can be used as analog inputs. For this document, 
+    these are called Analog Inputs, and are PN9 to PN22. 
+* There are 6 GPIO pins that are digital I/O only. For this document, these are 
+    called GPIOs, and are PN23 to PN28.
+* There are four motor H-bridge drivers. These are brought out as four pairs of 
+    output pins. They are labeled as the A, B, C and D output ports on the 
+    board.
+* All I/O pins use 5V signal levels. Analog inputs are set up where 5V = 4095 
+    counts, and 0V = 0 counts.
+* Each of the 14 analogs, 8 RC servo and 6 GPIO pins can be switched between 
+    their default function (Analog, RC Servo, GPIO) and digital input or 
+    digital output on a pin by pin basis.
+* LED - there is one LED output on the RCMx1. It is next to the programming
+    connector and is called LED1. It blinks on any read or write to register
+    0x0F (the safety timeout reset register) to indicate connectivity with
+    the SRV-1.
+    
+RCMx1 I2C 7-bit address: 0x1C 
+    In PicoC:
+    For single byte writes, use writei2c(0x1C,<register>,<value>);
+    For single byte reads, use readi2c(0x1C,<register>);
+    For double byte writes, use writei2c2(0x1C,<register>,<value>);
+    For double byte reads, use readi2c2(0x1C,<register>);
+
+    
+::: REGISTERS :::
+    
+Misc Control
+
+    0x00: Software Revision Value                            1 byte, read only
+
+    0x0F: Safety Timeout Reset                               1 byte, read/write
+        A read from this register returns the current software version value.
+        A write to this register doesn't actually write anything.
+        You must read or write to this register often enough to prevent the 
+        RCServo and Motor safety timeouts from tripping. Every second, the 
+        safety timeouts increment. If they ever reach the values set in
+        RC Servo Safety Timeout and/or Motor Safety Timeout values, then
+        those servos or motors will shut down.
+    
+GPIO control (PN23 to PN28)
+
+    0x10: GPIO data values                                   1 byte, read/write
+        Only bits 0 through 5 of this register are significant because there
+            are only 6 GPIO pins. Bit0 corresponds to PN23, Bit1 to PN24, etc.
+        
+        Read: Byte1: GPIO digital input bits 0-6 - Reads GPIO PN23 through 
+            PN28, no matter what direction the pins are set to
+        Write: Byte1: Writes to GPIO digital output Reads GPIO PN23 through 
+            PN28, pins must be set as outputs for value to appear on pin
+
+    0x11: GPIO direction bits                                1 byte, read/write
+        Each bit of GPIO individually settable for direction.
+        0 = output 1 = input
+        Register contains 0x3F on boot (all inputs)
+        
+        Read/Write: Byte1: GPIO digital direction pins PN23 to PN28
+
+    0x12: GPIO pull-up control                               1 byte, read/write
+        Register contains 0x00 on boot.
+        
+        Read/Write: Bit0: 1 = GPIO bits PN23 to PN28 pull-up on, 0 = off 
+            
+    0x13: GPIO invert control                                1 byte, read/write
+        Set a bit in this register to turn on inverting for that GPIO bit. 
+        Clear the bit to turn off inverting for that GPIO bit. When the bit is 
+        read with inverting turned on, it will be inverted before being read.
+        Register contains 0x00 on boot.
+        
+        Read/Write: Byte1: GPIO invert control for PN23 to PN28
+    
+    
+RC Servo Control (PN1 to PN8)
+
+    0x20: RC Servo GPIO data values                          1 byte, read/write
+        Read: Byte1: RC Servo digital input PN1 to PN8 - Reads RC Servo 1 
+            through 8, no matter what direction the pins are set to
+        Write:
+            Byte1: Writes to RC Servo digital output PN1 to PN8 - pins must 
+            be set as outputs for value to appear on pin
+    
+    0x21: RC Servo GPIO direction bits                       1 byte, read/write
+        0 = output 1 = input
+        Register contains 0xFF on boot (all inputs)
+
+        Read/Write: Byte1: RC Servo GPIO direction bits 1-8
+
+    0x23: RC Servo GPIO invert control                       1 byte, read/write
+        Set a bit in this register to turn on inverting for that GPIO bit. 
+        Clear the bit to turn off inverting for that GPIO bit. When the bit is 
+        read with inverting turned on, it will be inverted before being read.
+        Register contains 0x00 on boot.
+
+        Read/Write: Byte1: RC Servo GPIO invert control bits 1-8
+ 
+    0x24: RC Servo enable bits                               1 byte, read/write
+        Any bits set in this 8-bit register indicate 
+        that the corresponding RC Servo pin is in RC Servo mode and 
+        can not be used for digital I/O. Any bits that are clear 
+        indicate that the RC servo pin is in digital input/output mode. 
+        Register contains 0xFF on boot. (all pins output RC Servo pulses)
+
+        Read/Write: Byte1: RC servo enable bits 1-8
+        
+    0x25: RC Servo filter enable bits                        1 byte, read/write
+        Any bits set in this 8-bit register indicate that the corresponding RC 
+        Servo channel's filter is turned on. This filter uses the Max Forward 
+        Speed, Max Reverse Speed, Max Acceleration, Max Deceleration, and 
+        Safety Timeout values (See below). Without the filter turned on, the 
+        RC servo positions are directly written to the servo channels.
+        
+        Read/Write: Byte1: RC servo filter enable bits 1-8
+        
+    0x31 through 0x38: RC Servo positions                    1 byte, read/write
+        0x00 = coast, 0x01 = full CW, 0x80 = stop, 0xFF = full CCW
+        
+        Read/Write: Byte1: RC Servo position output 
+    
+    0x41 through 0x48: RC Servo max forward speed            1 byte, read/write
+        (not implemented yet on RCMx1)
+        Valid values are from 0x80 to 0xFF, and correspond to maximum (highest)
+        RC servo position allowed for the channel.
+        Contains 0xFF on boot.
+        
+        Read/Write Byte1: max forward speed 
+             
+    0x51 through 0x58: RC Servo max reverse speed            1 byte, read/write
+        (not implemented yet on RCMx1)
+        Valid values are from 0x01 to 0x80, and correspond to the minimum
+        (lowest) RC servo position allowed for the channel.
+        Contains 0x01 on boot.
+
+        Read/Write: Byte1: max reverse speed
+    
+    0x61 through 0x68: RC Servo max acceleration             1 byte, read/write
+        (not implemented yet on RCMx1)
+        Controls how fast each actual RC servo output value (position) is
+        allowed to change when a new position is send to the RCMx1 for a given
+        RC servo channel. The units are servo position counts per 24ms.
+        Applies when the new target position is greater than the current
+        position.
+        Valid values from 0x01 to 0xFF.
+        Contains 0xFF on boot.
+        
+        Read/Write: Byte1: max acceleration
+            
+    0x71 through 0x78: RC Servo max deceleration             1 byte, read/write
+        (not implemented yet on RCMx1)
+        Controls how fast each actual RC servo output value (position) is
+        allowed to change when a new position is send to the RCMx1 for a given
+        RC servo channel. The units are servo position counts per 24ms.
+        Applies when the new target position is less than the current position.
+        Valid values from 0x01 to 0xFF.
+        Contains 0xFF on boot.
+        
+        Read/Write: Byte1: max deceleration
+     
+    0x81 through 0x88: RC Servo safety time-out in seconds    1 byte, read/write
+        If the time between writes or reads to the Safety Timeout Reset exceed
+        this value (on a per servo basis) in seconds then that servo will be 
+        turned off (no pulses). Each servo can have it's own safety timeout value.
+        Valid values are 0x00 (to disable) and 0x01 to 0xFF in seconds.
+        Contains 0x02 on boot
+        
+        Read/Write: Byte1: safety time-out in seconds
+    
+    0x91 through 0x98: RC Servo Slow Move Control            1 byte, read/write
+        These eight registers control the 'slow move' feature. They are 
+        intended to use a normal RC servo and treat it like a continuous 
+        rotation servo. Send a value like 0xC0 to have the servo slowly 
+        increment its position forward. Stop it at any point with 0x00 or 0x80. 
+        It will stop on its own when getting to its maximum position. 
+        0x00 = off, 0x01 = full speed reverse, 0x80 = don't move, 
+            0xFF = full speed forward
+        Contains 0x00 on boot.
+        
+        Read/Write: Byte1: slow move speed.
+            
+Analog inputs (RP9 to RP22)
+
+    Analog Input pin digital IO Control
+    0xA0: Analog Input GPIO value                           2 bytes, read/write
+        Note that any analog input pins that are set for GPIO access
+        will always read high (1) in this register.
+        
+        Read: Byte1: Analog Input GPIO value bits for PN9 to PN16.
+            Reads Analog Input as GPIO no matter what direction the pins are 
+            set to.
+        Read: Byte2: Analog Input GPIO value bits for PN17 to PN22.
+            Reads Analog Input as GPIO no matter what direction the pins are 
+            set to.
+        Write: Byte1: Analog Input as GPIO value output for PN9 to PN16.
+            Pins must be set as outputs for value to appear on pin.
+        Write: Byte2: Analog Input as GPIO value output for PN17 to PN22
+            Pins must be set as outputs for value to appear on pin.
+    
+    0xA1: Analog Input GPIO Direction bits                 2 bytes, read/write
+        Each bit of Analog Input as GPIO individually settable for direction.
+        Note, these bits only affect analog pins that are in GPIO mode.
+        0 = output 1 = input
+        Contains 0x3FFF on boot (all inputs)
+
+        Read/Write: Byte1: Analog Input GPIO direction bits for PN9 to PN16
+        Read/Write: Byte2: Analog Input GPIO direction bits for PN17 to PN22
+            
+    0xA3: Analog Input GPIO Invert Control                  2 bytes, read/write
+        Set a bit in this register to turn on inverting for that Analog Input 
+        (when it is set as a GPIO). Clear the bit to turn off inverting for 
+        that Analog Input as GPIO bit. When the bit is read from with inverting 
+        turned on it will be inverted before being read.
+        0 = not inverted, 1 = inverted
+        Contains 0x0000 on boot.
+
+        Read/Write: Byte1: Analog Input GPIO invert bits for PN9 to PN16
+        Read/Write: Byte2: Analog Input GPIO invert bits for PN17 to PN22
+
+    0xA4: Analog Input Enable bits                          2 bytes, read/write
+        Any bits set in this 14-bit register indicate that the corresponding 
+        analog pin is in analog mode and can not be used for digital output. 
+        Any bits that are clear indicate that the analog pin is in digital 
+        input/output mode. 
+        0 = GPIO, 1 = Analog Input
+        Contains 0x3FFF (all analog inputs) on boot.
+
+        Read/Write: Byte1: Analog input enable bits for PN9 to PN16
+        Read/WRite: Byte2: Analog input enable bits for PN17 to PN22
+    
+    0xB1 through 0xBE: Sensor Values                  2 bytes, read only
+
+NEED TO UPDATE!
+
+        0xB1 corresponds to PN9, 0xB2 to PN10, etc.
+        Read 12-bit analog value on analog input pins. 
+        0V = 0 counts
+        5V = 4095 counts
+
+        Read: Byte1: Upper 2 bits of 12 bit ADC conversion
+        Read: Byte2: Lower 8 bits of 12 bit ADC conversion
+
+    0xC1 through 0xCE: Analog Input Mode values             1 byte, read/write
+        0xC1 corresponds to PN9, 0xC2 to PN10, etc.
+        Each analog input pin has a mode. This mode sets which sensor the RCMx1
+        thinks is attached to that pin. You must set the mode appropriately for
+        the type of sensor connected to the pin.
+        The result of the sensor conversion (based on sensor type) will then
+        be present in the Sensor Values registers.
+        On boot, all analog inputs are set to ANALOG_PIN_MDOE_ANALOG (0x01)
+
+NEED TO UPDATE!
+        
+        These are the allowed values:
+
+        ANALOG_PIN_MODE_DIGITAL         0x00
+TO DO IN CODE!
+            The analog value will be read and compared to the Sensor Threshold
+            value (for the pin). If the analog value is higher than the threshold
+            the Sensor Value register for the pin will be all 1s (0xFFFF). If 
+            the analog value is less than the threshold, the Sensor Value register
+            will be all 0s (0x0000).
+            
+        ANALOG_PIN_MODE_ANALOG          0x01
+            The analog value will be read and directly written to the Sensor Value
+            register for this pin. The value will be from 0x0000 (meaning 0V) to
+            0x3FFF (meaning 5V). The Sensor Threshold Value is not used in this 
+            mode.
+
+        ANALOG_PIN_MODE_RCX_LIGHT       0x02
+            The analog pin will be switched to power the RCX light sensor, and then
+            the analog value returned by the sensor (through the 10K to +5V in the
+            cable) will be read, and stored in the Sensor Value register. The
+            Sensor Threshold Value is not used in this mode.
+
+        ANALOG_PIN_MODE_RCX_ROTATION    0x03
+            This mode is not currently supported on the RCMx1 because the RCX rotation
+            sensor needs at least 5.25V, and the RCMx1 only supplies about 4.95V.
+
+        ANALOG_PIN_MODE_RCX_TOUCH       0x04
+            The analog value will be read and compared to the Sensor Threshold
+            value (for the pin). If the analog value is higher than the threshold
+            the Sensor Value register for the pin will be all 1s (0xFFFF). If 
+            the analog value is less than the threshold, the Sensor Value register
+            will be all 0s (0x0000).
+
+        ANALOG_PIN_MODE_NXT_TOUCH       0x05
+            The analog value will be read and compared to the Sensor Threshold
+            value (for the pin). If the analog value is higher than the threshold
+            the Sensor Value register for the pin will be all 1s (0xFFFF). If 
+            the analog value is less than the threshold, the Sensor Value register
+            will be all 0s (0x0000).
+
+        ANALOG_PIN_MODE_NXT_SOUND       0x06
+            The analog value will be read and directly written to the Sensor Value
+            register for this pin. The value will be from 0x0000 (meaning 0V) to
+            0x3FFF (meaning 5V). The Sensor Threshold Value is not used in this 
+            mode.
+
+        ANALOG_PIN_MODE_NXT_MOTOR       0x07
+TO DO IN CODE!
+            This mode is the odd one out. Because the NXT motor encoder needs
+            two pins, when you set an analog pin to this mode, the next pin
+            in line will also be used for the other encoder channel. For example,
+            if you set this mode for 0xC2 (analog pin2), then it will also use
+            analog pin 3 for the second channel. 
+            
+            When in this mode, both pins are set to be pure digital inputs, 
+            no analog reading at all.  They are sampled by a 10Khz interrupt
+            service routine, which monitors them for encoder state changes. 
+            When it detects a state change, it will add or subtract one from 
+            the current value in the Sensor Value register. The Sensor Value
+            register thus becomes the current position of the encoder.
+            
+            You can write to the Sensor Value register when you have a pin
+            set to this mode. That allows you to zero out the position
+            (or set it to some value) at any point.
+            
+            At the point that you write 0x07 to one of these mode registers
+            to set the analog input pin to this mode, the RCMx1 will set the
+            next analog pin (for the second encoder channel) to 
+            ANALOG_PIN_MODE_DONT_USE. Do not set the second pin to a different
+            value or it may not be read correctly by the encoder Interrupt
+            Service Routine.
+            
+            The Sensor Threshold Value register is not used in this mode.
+
+        ANALOG_PIN_MODE_NXT_LIGHT       0x08
+TO DO IN CODE!
+            The analog value will be read and directly written to the Sensor Value
+            register for this pin. The value will be from 0x0000 (meaning 0V) to
+            0x3FFF (meaning 5V). The Sensor Threshold Value is not used in this 
+            mode.
+        
+        ANALOG_PIN_MODE_NXT_COLOR       0x09
+            Due to the non-public nature of the NXT Color sensor's communication
+            method, support for this sensor is not implemented in the RCMx1 firmware.
+            
+
+        ANALOG_PIN_MODE_DONT_USE        0xFF
+            Do not set a pin to this value.
+        
+        Read/Write: Byte1: Analog Input Mode control values
+
+    0xE1 through 0xEE: Sensor Threshold Value             2 bytes, read/write
+        0xE1 corresponds to PN9, 0xE2 to PN10, etc.
+        Some of the Analog Input Modes can use threshold values. These are
+        the threshold values for each analog input. For each mode, the threshold
+        value is described here. On boot, these values are all set to 2048 (0x0800).        
+        
+        ANALOG_PIN_MODE_DIGITAL
+            The threshold value is the analog value that determines the difference
+            between true and false in this mode. Valid values are 0 to 4095. If
+            the analog value on this pin is above the threshold, then the pin will
+            be read as high (true). If it's equal to or less than this value it
+            will be read as low (false).
+            
+        ANALOG_PIN_MODE_ANALOG
+            The threshold value is not used in this mode.
+            
+        ANALOG_PIN_MODE_RCX_LIGHT
+            The threshold value is not used in this mode.
+            
+        ANALOG_PIN_MODE_RCX_ROTATION
+            The threshold value is not used in this mode.
+
+        ANALOG_PIN_MODE_RCX_TOUCH       0x04
+            The threshold value is the analog value that determines the difference
+            between true and false in this mode. Valid values are 0 to 4095. If
+            the analog value on this pin is above the threshold, then the pin will
+            be read as high (true). If it's equal to or less than this value it
+            will be read as low (false).
+            
+        ANALOG_PIN_MODE_NXT_TOUCH       0x05
+            The threshold value is the analog value that determines the difference
+            between true and false in this mode. Valid values are 0 to 4095. If
+            the analog value on this pin is above the threshold, then the pin will
+            be read as high (true). If it's equal to or less than this value it
+            will be read as low (false).
+            
+        ANALOG_PIN_MODE_NXT_SOUND       0x06
+            The threshold value is not used in this mode.
+               
+        Read/Write: Byte1: Sensor Threshold high byte
+        Read/Write: Byte2: Sensor Threshold low byte
+
+Motor Driver Outputs
+    
+    0xD1 through 0xD4: Motor Drive Control                  1 byte, read/write
+        0xD1 corresponds to output A, 0xD2 to B, 0xD3 to C and 0xD4 to D
+        0x00 = coast
+        0x01 = full reverse
+        0x80 = stop/brake
+        0xFF = full forward
+        Contains 0x00 on boot
+        
+        Read/Write: Byte1: Motor Drive Control command value
+
+    0xD5 through 0xD8: Motor safety time-out in seconds      1 byte, read/write
+        If the time between writes or reads to the Safety Timeout Reset exceed
+        this value (on a per motor basis) in seconds then that motor will be 
+        shut off. Each motor has it's own safety timeout value.
+        Valid values are 0x00 (to disable) and 0x01 to 0xFF in seconds.
+        Contains 0x02 on boot
+        
+        Read/Write: Byte1: safety time-out in seconds
+        
+        
+        
+        

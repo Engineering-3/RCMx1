@@ -1,0 +1,7 @@
+Notes on RCMx1 when doing firmware bringup.
+
+* Wrong processor used - need the larger part (get part number for Jim) with PWM 9 and 10
+* Silk screen for GPIO and Analog needs to be re-thought
+* Mapping of analog and GPIO needs to be updated - create map of current code for Tim and approve
+* ADC values should never be able to go negative.
+* 

@@ -1,0 +1,263 @@
+                       RCMx1 Commands
+                       
+        For RCMx1 firmware version 0x07 - 12/24/2012
+    Written by Brian Schmalz of Logic PD for Tim Jump of BSM.
+
+    
+:::General:::
+    
+This document describes the various software features of the RCMx1 board and 
+firmware that are accessible via I2C register reads and writes.
+
+The RCMx1 has one communications channel to the Blackfin processor: I2C
+
+The Blackfin sends I2C commands to the RCMx1 and some commands generate I2C 
+responses as well. Blackfin is always I2C master, RCMx1 is always I2C slave.
+
+Notes about RCMx1:
+
+* Almost all of the pins on the RCMx1 can be used as GPIO pins. All pins that
+    can be used as GPIO are numbered 1 through 28, and are referred to in this
+    document as PN1 through PN28.
+* There are 8 I/O pins that can be used as RC servo outputs. For this document, 
+    these are called RC Servo outputs, and are PN1 to PN8.
+* There are 14 I/O pins that can be used as analog inputs. For this document, 
+    these are called Analog Inputs, and are PN9 to PN22. 
+* There are 6 GPIO pins that are digital I/O only. For this document, these are 
+    called GPIOs, and are PN23 to PN28.
+* There are four motor H-bridge drivers. These are brought out as four pairs of 
+    output pins. They are labeled as the A, B, C and D output ports on the 
+    board.
+* All I/O pins use 5V signal levels. Analog inputs are set up where 5V = 4095 
+    counts, and 0V = 0 counts.
+* Each of the 14 analogs, 8 RC servo and 6 GPIO pins can be switched between 
+    their default function (Analog, RC Servo, GPIO) and digital input or 
+    digital output on a pin by pin basis.
+
+RCMx1 I2C 7-bit address: 0x1C 
+    In PicoC:
+    For single byte writes, use writei2c(0x1C,<register>,<value>);
+    For single byte reads, use readi2c(0x1C,<register>);
+    For double byte writes, use writei2c2(0x1C,<register>,<value>);
+    For double byte reads, use readi2c2(0x1C,<register>);
+
+    
+::: REGISTERS :::
+    
+Misc Control
+
+    0x00: Software Revision Value                             1 byte, read only
+
+GPIO control (PN23 to PN28)
+
+    0x10: GPIO data values                                   1 byte, read/write
+        Only bits 0 through 5 of this register are significant because there
+            are only 6 GPIO pins. Bit0 corresponds to PN23, Bit1 to PN24, etc.
+        
+        Read: Byte1: GPIO digital input bits 0-6 - Reads GPIO PN23 through 
+            PN28, no matter what direction the pins are set to
+        Write: Byte1: Writes to GPIO digital output Reads GPIO PN23 through 
+            PN28, pins must be set as outputs for value to appear on pin
+
+    0x11: GPIO direction bits                                1 byte, read/write
+        Each bit of GPIO individually settable for direction.
+        0 = output 1 = input
+        Register contains 0x3F on boot (all inputs)
+        
+        Read/Write: Byte1: GPIO digital direction pins PN23 to PN28
+
+    0x12: GPIO pull-up control                               1 byte, read/write
+        Register contains 0x00 on boot.
+        
+        Read/Write: Bit0: 1 = GPIO bits PN23 to PN28 pull-up on, 0 = off 
+            
+    0x13: GPIO invert control                                1 byte, read/write
+        Set a bit in this register to turn on inverting for that GPIO bit. 
+        Clear the bit to turn off inverting for that GPIO bit. When the bit is 
+        read with inverting turned on, it will be inverted before being read.
+        Register contains 0x00 on boot.
+        
+        Read/Write: Byte1: GPIO invert control for PN23 to PN28
+    
+    
+RC Servo Control (PN1 to PN8)
+
+    0x20: RC Servo GPIO data values                          1 byte, read/write
+        Read: Byte1: RC Servo digital input PN1 to PN8 - Reads RC Servo 1 
+            through 8, no matter what direction the pins are set to
+        Write:
+            Byte1: Writes to RC Servo digital output PN1 to PN8 - pins must 
+            be set as outputs for value to appear on pin
+    
+    0x21: RC Servo GPIO direction bits                       1 byte, read/write
+        0 = output 1 = input
+        Register contains 0xFF on boot (all inputs)
+
+        Read/Write: Byte1: RC Servo GPIO direction bits 1-8
+
+    0x23: RC Servo GPIO invert control                       1 byte, read/write
+        Set a bit in this register to turn on inverting for that GPIO bit. 
+        Clear the bit to turn off inverting for that GPIO bit. When the bit is 
+        read with inverting turned on, it will be inverted before being read.
+        Register contains 0x00 on boot.
+
+        Read/Write: Byte1: RC Servo GPIO invert control bits 1-8
+ 
+    0x24: RC Servo enable bits                               1 byte, read/write
+        Any bits set in this 8-bit register indicate 
+        that the corresponding RC Servo pin is in RC Servo mode and 
+        can not be used for digital I/O. Any bits that are clear 
+        indicate that the RC servo pin is in digital input/output mode. 
+        Register contains 0xFF on boot. (all pins output RC Servo pulses)
+
+        Read/Write: Byte1: RC servo enable bits 1-8
+        
+    0x25: RC Servo filter enable bits                        1 byte, read/write
+        Any bits set in this 8-bit register indicate that the corresponding RC 
+        Servo channel's filter is turned on. This filter uses the Max Forward 
+        Speed, Max Reverse Speed, Max Acceleration, Max Deceleration, and 
+        Safety Timeout values (See below). Without the filter turned on, the 
+        RC servo positions are directly written to the servo channels.
+        
+        Read/Write: Byte1: RC servo filter enable bits 1-8
+        
+    0x31 through 0x38: RC Servo positions                    1 byte, read/write
+        0x00 = coast, 0x01 = full CW, 0x80 = stop, 0xFF = full CCW
+        
+        Read/Write: Byte1: RC Servo position output 
+    
+    0x41 through 0x48: RC Servo max forward speed            1 byte, read/write
+        (not implemented yet on RCMx1)
+        Valid values are from 0x80 to 0xFF, and correspond to maximum (highest)
+        RC servo position allowed for the channel.
+        Contains 0xFF on boot.
+        
+        Read/Write Byte1: max forward speed 
+             
+    0x51 through 0x58: RC Servo max reverse speed            1 byte, read/write
+        (not implemented yet on RCMx1)
+        Valid values are from 0x01 to 0x80, and correspond to the minimum
+        (lowest) RC servo position allowed for the channel.
+        Contains 0x01 on boot.
+
+        Read/Write: Byte1: max reverse speed
+    
+    0x61 through 0x68: RC Servo max acceleration             1 byte, read/write
+        (not implemented yet on RCMx1)
+        Controls how fast each actual RC servo output value (position) is
+        allowed to change when a new position is send to the RCMx1 for a given
+        RC servo channel. The units are servo position counts per 24ms.
+        Applies when the new target position is greater than the current
+        position.
+        Valid values from 0x01 to 0xFF.
+        Contains 0xFF on boot.
+        
+        Read/Write: Byte1: max acceleration
+            
+    0x71 through 0x78: RC Servo max deceleration             1 byte, read/write
+        (not implemented yet on RCMx1)
+        Controls how fast each actual RC servo output value (position) is
+        allowed to change when a new position is send to the RCMx1 for a given
+        RC servo channel. The units are servo position counts per 24ms.
+        Applies when the new target position is less than the current position.
+        Valid values from 0x01 to 0xFF.
+        Contains 0xFF on boot.
+        
+        Read/Write: Byte1: max deceleration
+     
+    0x81 through 0x88: RC Servo safety time-out in seconds    1 byte, read/write
+        (not implemented yet on RCMx1)
+        Time in seconds between writes to the corresponding RC Servo Position
+        register. If the time between writes to the corresponding RC Servo
+        Position register exceeds this value, then the RC Servo position
+        register is written as a 0x00.
+        Valid values are 0x00 (to disable) and 0x01 to 0xFF in seconds.
+        Contains 0x00 (disabled) on boot
+        
+        Read/Write: Byte1: safety time-out in seconds
+    
+    0x91 through 0x98: RC Servo Slow Move Control            1 byte, read/write
+        These eight registers control the 'slow move' feature. They are 
+        intended to use a normal RC servo and treat it like a continuous 
+        rotation servo. Send a value like 0xC0 to have the servo slowly 
+        increment its position forward. Stop it at any point with 0x00 or 0x80. 
+        It will stop on its own when getting to its maximum position. 
+        0x00 = off, 0x01 = full speed reverse, 0x80 = don't move, 
+            0xFF = full speed forward
+        Contains 0x00 on boot.
+        
+        Read/Write: Byte1: slow move speed.
+            
+Analog inputs (RP9 to RP22)
+
+    Analog Input pin digital IO Control
+    0xA0: Analog Input GPIO value                           2 bytes, read/write
+        Note that any analog input pins that are set for GPIO access
+        will always read high (1) in this register.
+        
+        Read: Byte1: Analog Input GPIO value bits for PN9 to PN16.
+            Reads Analog Input as GPIO no matter what direction the pins are 
+            set to.
+        Read: Byte2: Analog Input GPIO value bits for PN17 to PN22.
+            Reads Analog Input as GPIO no matter what direction the pins are 
+            set to.
+        Write: Byte1: Analog Input as GPIO value output for PN9 to PN16.
+            Pins must be set as outputs for value to appear on pin.
+        Write: Byte2: Analog Input as GPIO value output for PN17 to PN22
+            Pins must be set as outputs for value to appear on pin.
+    
+    0xA1: Analog Input GPIO Direction bits                 2 bytes, read/write
+        Each bit of Analog Input as GPIO individually settable for direction.
+        Note, these bits only affect analog pins that are in GPIO mode.
+        0 = output 1 = input
+        Contains 0x3FFF on boot (all inputs)
+
+        Read/Write: Byte1: Analog Input GPIO direction bits for PN9 to PN16
+        Read/Write: Byte2: Analog Input GPIO direction bits for PN17 to PN22
+            
+    0xA3: Analog Input GPIO Invert Control                  2 bytes, read/write
+        Set a bit in this register to turn on inverting for that Analog Input 
+        (when it is set as a GPIO). Clear the bit to turn off inverting for 
+        that Analog Input as GPIO bit. When the bit is read from with inverting 
+        turned on it will be inverted before being read.
+        0 = not inverted, 1 = inverted
+        Contains 0x0000 on boot.
+
+        Read/Write: Byte1: Analog Input GPIO invert bits for PN9 to PN16
+        Read/Write: Byte2: Analog Input GPIO invert bits for PN17 to PN22
+
+    0xA4: Analog Input Enable bits                          2 bytes, read/write
+        Any bits set in this 14-bit register indicate that the corresponding 
+        analog pin is in analog mode and can not be used for digital output. 
+        Any bits that are clear indicate that the analog pin is in digital 
+        input/output mode. 
+        0 = GPIO, 1 = Analog Input
+        Contains 0x3FFF (all analog inputs) on boot.
+
+        Read/Write: Byte1: Analog input enable bits for PN9 to PN16
+        Read/WRite: Byte2: Analog input enable bits for PN17 to PN22
+    
+    0xB1 through 0xBE: Analog Input values                  2 bytes, read only
+        0xB1 corresponds to PN9, 0xB2 to PN10, etc.
+        Read 12-bit analog value on analog input pins. 
+        0V = 0 counts
+        5V = 4095 counts
+
+        Read: Byte1: Upper 2 bits of 12 bit ADC conversion
+        Read: Byte2: Lower 8 bits of 12 bit ADC conversion
+
+Motor Driver Outputs
+    
+    0xD1 through 0xD4: Motor driver Control                  1 byte, read/write
+        0xD1 corresponds to A, 0xD2 to B, 0xD3 to C and 0xD4 to D
+        0x00 = coast
+        0x01 = full reverse
+        0x80 = stop/brake
+        0xFF = full forward
+        Contains 0x00 on boot
+        
+        Read/Write: Byte1: Motor control value
+
+        
+        
+        

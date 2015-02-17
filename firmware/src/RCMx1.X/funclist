@@ -1,0 +1,7 @@
+_ConfigureOscillator: CODE, 292 0 2
+_main: CODE, 268 0 18
+_high_isr: CODE, 8 0 260
+_InitIO: CODE, 294 0 2
+_InitI2C: CODE, 296 0 2
+_low_isr: CODE, 24 0 138
+Total: 422
