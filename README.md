@@ -28,5 +28,5 @@ Distributed as-is; no warranty is given.
 
 Getting Started Help
 --------------------
-Follow the [RCMx1 User Guide](https://l) here in the repo.
+Follow the [RCMx1 User Guide](https://github.com/Engineering-3/RCMx1/blob/master/firmware/docs/RCMx1%20User%20Guide.doc?raw=true) here in the repo.
 
