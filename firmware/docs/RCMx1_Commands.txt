@@ -83,8 +83,8 @@ GPIO control (PN23 to PN28)
 
     0x11: GPIO direction bits                                1 byte, read/write
         Each bit of GPIO individually settable for direction.
-        0 = output 1 = input
-        Register contains 0x3F on boot (all inputs)
+        1 = output 0 = input
+        Register contains 0x00 on boot (all inputs)
         
         Read/Write: Byte1: GPIO digital direction pins PN23 to PN28
 
@@ -113,7 +113,7 @@ RC Servo Control (PN1 to PN8)
     
     0x21: RC Servo GPIO direction bits                       1 byte, read/write
         0 = output 1 = input
-        Register contains 0xFF on boot (all inputs)
+        Register contains 0x00 on boot (all output)
 
         Read/Write: Byte1: RC Servo GPIO direction bits 1-8
 
@@ -229,8 +229,8 @@ Analog inputs (RP9 to RP22)
     0xA1: Analog Input GPIO Direction bits                 2 bytes, read/write
         Each bit of Analog Input as GPIO individually settable for direction.
         Note, these bits only affect analog pins that are in GPIO mode.
-        0 = output 1 = input
-        Contains 0x3FFF on boot (all inputs)
+        1 = output 0 = input
+        Contains 0x0000 on boot (all inputs)
 
         Read/Write: Byte1: Analog Input GPIO direction bits for PN9 to PN16
         Read/Write: Byte2: Analog Input GPIO direction bits for PN17 to PN22
@@ -258,9 +258,6 @@ Analog inputs (RP9 to RP22)
         Read/WRite: Byte2: Analog input enable bits for PN17 to PN22
     
     0xB1 through 0xBE: Sensor Values                  2 bytes, read only
-
-NEED TO UPDATE!
-
         0xB1 corresponds to PN9, 0xB2 to PN10, etc.
         Read 12-bit analog value on analog input pins. 
         0V = 0 counts
@@ -278,12 +275,9 @@ NEED TO UPDATE!
         be present in the Sensor Values registers.
         On boot, all analog inputs are set to ANALOG_PIN_MDOE_ANALOG (0x01)
 
-NEED TO UPDATE!
-        
         These are the allowed values:
 
         ANALOG_PIN_MODE_DIGITAL         0x00
-TO DO IN CODE!
             The analog value will be read and compared to the Sensor Threshold
             value (for the pin). If the analog value is higher than the threshold
             the Sensor Value register for the pin will be all 1s (0xFFFF). If 
@@ -296,38 +290,37 @@ TO DO IN CODE!
             0x3FFF (meaning 5V). The Sensor Threshold Value is not used in this 
             mode.
 
-        ANALOG_PIN_MODE_RCX_LIGHT       0x02
+        ANALOG_PIN_MODE_RCX_LIGHT       0x02 (not supported yet)
             The analog pin will be switched to power the RCX light sensor, and then
             the analog value returned by the sensor (through the 10K to +5V in the
             cable) will be read, and stored in the Sensor Value register. The
             Sensor Threshold Value is not used in this mode.
 
-        ANALOG_PIN_MODE_RCX_ROTATION    0x03
+        ANALOG_PIN_MODE_RCX_ROTATION    0x03 (not supported yet)
             This mode is not currently supported on the RCMx1 because the RCX rotation
             sensor needs at least 5.25V, and the RCMx1 only supplies about 4.95V.
 
-        ANALOG_PIN_MODE_RCX_TOUCH       0x04
+        ANALOG_PIN_MODE_RCX_TOUCH       0x04 (not supported yet)
             The analog value will be read and compared to the Sensor Threshold
             value (for the pin). If the analog value is higher than the threshold
             the Sensor Value register for the pin will be all 1s (0xFFFF). If 
             the analog value is less than the threshold, the Sensor Value register
             will be all 0s (0x0000).
 
-        ANALOG_PIN_MODE_NXT_TOUCH       0x05
+        ANALOG_PIN_MODE_NXT_TOUCH       0x05 (not supported yet)
             The analog value will be read and compared to the Sensor Threshold
             value (for the pin). If the analog value is higher than the threshold
             the Sensor Value register for the pin will be all 1s (0xFFFF). If 
             the analog value is less than the threshold, the Sensor Value register
             will be all 0s (0x0000).
 
-        ANALOG_PIN_MODE_NXT_SOUND       0x06
+        ANALOG_PIN_MODE_NXT_SOUND       0x06 (not supported yet)
             The analog value will be read and directly written to the Sensor Value
             register for this pin. The value will be from 0x0000 (meaning 0V) to
             0x3FFF (meaning 5V). The Sensor Threshold Value is not used in this 
             mode.
 
-        ANALOG_PIN_MODE_NXT_MOTOR       0x07
-TO DO IN CODE!
+        ANALOG_PIN_MODE_NXT_MOTOR       0x07 (not supported yet)
             This mode is the odd one out. Because the NXT motor encoder needs
             two pins, when you set an analog pin to this mode, the next pin
             in line will also be used for the other encoder channel. For example,
@@ -354,14 +347,13 @@ TO DO IN CODE!
             
             The Sensor Threshold Value register is not used in this mode.
 
-        ANALOG_PIN_MODE_NXT_LIGHT       0x08
-TO DO IN CODE!
+        ANALOG_PIN_MODE_NXT_LIGHT       0x08 (not supported yet)
             The analog value will be read and directly written to the Sensor Value
             register for this pin. The value will be from 0x0000 (meaning 0V) to
             0x3FFF (meaning 5V). The Sensor Threshold Value is not used in this 
             mode.
         
-        ANALOG_PIN_MODE_NXT_COLOR       0x09
+        ANALOG_PIN_MODE_NXT_COLOR       0x09 (not supported yet)
             Due to the non-public nature of the NXT Color sensor's communication
             method, support for this sensor is not implemented in the RCMx1 firmware.
             
