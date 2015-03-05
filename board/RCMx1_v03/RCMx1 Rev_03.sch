@@ -14103,6 +14103,50 @@ of the License at http://solderpad.org/licenses/SHL-0.51. Unless required by app
 software, hardware and materials distributed under this License is distributed on an “AS IS” BASIS, WITHOUT 
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language 
 governing permissions and limitations under the License.</text>
+<text x="-60.706" y="14.478" size="1.778" layer="98">1</text>
+<text x="-60.706" y="9.398" size="1.778" layer="98">2</text>
+<text x="-60.706" y="4.318" size="1.778" layer="98">3</text>
+<text x="-60.706" y="-0.762" size="1.778" layer="98">4</text>
+<text x="-60.706" y="-5.588" size="1.778" layer="98">E</text>
+<text x="-60.706" y="-10.668" size="1.778" layer="98">9</text>
+<text x="-61.976" y="-16.002" size="1.778" layer="98">10</text>
+<text x="-61.722" y="-21.082" size="1.778" layer="98">11</text>
+<text x="-61.976" y="-25.654" size="1.778" layer="98">12</text>
+<text x="-61.976" y="-30.988" size="1.778" layer="98">13</text>
+<text x="-61.976" y="-36.322" size="1.778" layer="98">14</text>
+<text x="-61.976" y="-41.402" size="1.778" layer="98">15</text>
+<text x="-61.976" y="-46.482" size="1.778" layer="98">23</text>
+<text x="-61.976" y="-51.816" size="1.778" layer="98">24</text>
+<text x="-61.976" y="-56.642" size="1.778" layer="98">25</text>
+<text x="-62.484" y="-61.722" size="1.778" layer="98">I2C</text>
+<text x="-62.484" y="-66.802" size="1.778" layer="98">I2C</text>
+<text x="354.33" y="-66.548" size="1.778" layer="98">I2C</text>
+<text x="354.33" y="-61.722" size="1.778" layer="98">I2C</text>
+<text x="354.33" y="-56.642" size="1.778" layer="98">28</text>
+<text x="354.584" y="-51.308" size="1.778" layer="98">27</text>
+<text x="354.584" y="-46.228" size="1.778" layer="98">26</text>
+<text x="354.584" y="-41.148" size="1.778" layer="98">22</text>
+<text x="354.584" y="-36.068" size="1.778" layer="98">21</text>
+<text x="354.584" y="-30.988" size="1.778" layer="98">20</text>
+<text x="354.33" y="-25.908" size="1.778" layer="98">19</text>
+<text x="354.33" y="-20.828" size="1.778" layer="98">18</text>
+<text x="354.076" y="-16.002" size="1.778" layer="98">17</text>
+<text x="354.076" y="-10.414" size="1.778" layer="98">16</text>
+<text x="354.076" y="-5.588" size="1.778" layer="98">E</text>
+<text x="354.076" y="-0.508" size="1.778" layer="98">8</text>
+<text x="354.076" y="4.572" size="1.778" layer="98">7</text>
+<text x="354.33" y="9.398" size="1.778" layer="98">6</text>
+<text x="354.076" y="14.478" size="1.778" layer="98">5</text>
+<wire x1="-66.294" y1="-42.926" x2="-58.166" y2="-42.926" width="0.1524" layer="98"/>
+<wire x1="-65.786" y1="-58.42" x2="-57.912" y2="-58.42" width="0.1524" layer="98"/>
+<wire x1="-64.77" y1="-6.858" x2="-58.42" y2="-6.858" width="0.1524" layer="98"/>
+<wire x1="-64.516" y1="-3.048" x2="-58.42" y2="-3.048" width="0.1524" layer="98"/>
+<wire x1="-64.77" y1="17.272" x2="-58.42" y2="17.272" width="0.1524" layer="98"/>
+<wire x1="353.568" y1="17.526" x2="358.394" y2="17.526" width="0.1524" layer="98"/>
+<wire x1="353.314" y1="-1.778" x2="357.632" y2="-1.778" width="0.1524" layer="98"/>
+<wire x1="353.06" y1="-6.858" x2="357.632" y2="-6.858" width="0.1524" layer="98"/>
+<wire x1="353.314" y1="-43.18" x2="361.188" y2="-43.18" width="0.1524" layer="98"/>
+<wire x1="353.568" y1="-58.166" x2="360.426" y2="-58.166" width="0.1524" layer="98"/>
 </plain>
 <instances>
 <instance part="GND4" gate="1" x="189.23" y="-167.64"/>
@@ -14200,9 +14244,9 @@ governing permissions and limitations under the License.</text>
 <attribute name="NAME" x="67.564" y="-127.635" size="1.778" layer="95"/>
 <attribute name="VALUE" x="79.121" y="-122.174" size="1.778" layer="96" rot="R270"/>
 </instance>
-<instance part="GND63" gate="1" x="-60.96" y="17.78"/>
+<instance part="GND63" gate="1" x="-68.58" y="17.78"/>
 <instance part="GND64" gate="1" x="396.24" y="30.48"/>
-<instance part="GND65" gate="1" x="356.87" y="2.54"/>
+<instance part="GND65" gate="1" x="360.68" y="2.54"/>
 <instance part="D4" gate="G$1" x="-63.5" y="2.54" smashed="yes" rot="R90">
 <attribute name="NAME" x="-68.326" y="4.445" size="1.778" layer="95"/>
 </instance>
@@ -14346,14 +14390,14 @@ governing permissions and limitations under the License.</text>
 <pinref part="C25" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<wire x1="365.76" y1="-33.02" x2="365.76" y2="-27.94" width="0.1524" layer="91"/>
-<wire x1="342.9" y1="-33.02" x2="365.76" y2="-33.02" width="0.1524" layer="91"/>
+<wire x1="365.76" y1="-32.766" x2="365.76" y2="-27.94" width="0.1524" layer="91"/>
+<wire x1="342.9" y1="-32.766" x2="365.76" y2="-32.766" width="0.1524" layer="91"/>
 <wire x1="342.9" y1="-50.8" x2="342.9" y2="-45.72" width="0.1524" layer="91"/>
-<junction x="342.9" y="-33.02"/>
+<junction x="342.9" y="-32.766"/>
 <pinref part="P+13" gate="1" pin="+5V"/>
 <wire x1="342.9" y1="-45.72" x2="342.9" y2="-40.64" width="0.1524" layer="91"/>
 <wire x1="342.9" y1="-40.64" x2="342.9" y2="-35.56" width="0.1524" layer="91"/>
-<wire x1="342.9" y1="-35.56" x2="342.9" y2="-33.02" width="0.1524" layer="91"/>
+<wire x1="342.9" y1="-35.56" x2="342.9" y2="-32.766" width="0.1524" layer="91"/>
 <wire x1="342.9" y1="-15.24" x2="342.9" y2="-20.32" width="0.1524" layer="91"/>
 <pinref part="J6" gate="G$1" pin="20"/>
 <pinref part="J6" gate="G$1" pin="23"/>
@@ -14363,7 +14407,7 @@ governing permissions and limitations under the License.</text>
 <wire x1="342.9" y1="-25.4" x2="342.9" y2="-30.48" width="0.1524" layer="91"/>
 <junction x="342.9" y="-25.4"/>
 <pinref part="J6" gate="G$1" pin="29"/>
-<wire x1="342.9" y1="-30.48" x2="342.9" y2="-33.02" width="0.1524" layer="91"/>
+<wire x1="342.9" y1="-30.48" x2="342.9" y2="-32.766" width="0.1524" layer="91"/>
 <junction x="342.9" y="-30.48"/>
 <pinref part="J6" gate="G$1" pin="32"/>
 <junction x="342.9" y="-35.56"/>
@@ -14618,7 +14662,7 @@ governing permissions and limitations under the License.</text>
 </segment>
 <segment>
 <wire x1="-55.88" y1="20.32" x2="-55.88" y2="15.24" width="0.1524" layer="91"/>
-<wire x1="-55.88" y1="20.32" x2="-60.96" y2="20.32" width="0.1524" layer="91"/>
+<wire x1="-55.88" y1="20.32" x2="-68.58" y2="20.32" width="0.1524" layer="91"/>
 <pinref part="GND63" gate="1" pin="GND"/>
 <pinref part="J20" gate="G$1" pin="1"/>
 <pinref part="J20" gate="G$1" pin="10"/>
@@ -14711,7 +14755,9 @@ governing permissions and limitations under the License.</text>
 <junction x="-55.88" y="-15.24"/>
 </segment>
 <segment>
-<wire x1="347.98" y1="5.08" x2="356.87" y2="5.08" width="0.1524" layer="91"/>
+<wire x1="347.98" y1="5.08" x2="347.98" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="347.98" y1="7.62" x2="360.68" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="360.68" y1="7.62" x2="360.68" y2="5.08" width="0.1524" layer="91"/>
 <junction x="347.98" y="5.08"/>
 <pinref part="GND65" gate="1" pin="GND"/>
 <wire x1="347.98" y1="0" x2="347.98" y2="5.08" width="0.1524" layer="91"/>
@@ -15543,10 +15589,10 @@ governing permissions and limitations under the License.</text>
 </net>
 <net name="N$5" class="0">
 <segment>
-<wire x1="342.9" y1="-5.08" x2="342.9" y2="-2.54" width="0.1524" layer="91"/>
+<wire x1="342.9" y1="-5.08" x2="342.9" y2="-2.286" width="0.1524" layer="91"/>
 <pinref part="D6" gate="G$1" pin="A"/>
-<wire x1="365.76" y1="0" x2="365.76" y2="-2.54" width="0.1524" layer="91"/>
-<wire x1="365.76" y1="-2.54" x2="342.9" y2="-2.54" width="0.1524" layer="91"/>
+<wire x1="365.76" y1="0" x2="365.76" y2="-2.286" width="0.1524" layer="91"/>
+<wire x1="365.76" y1="-2.286" x2="342.9" y2="-2.286" width="0.1524" layer="91"/>
 <pinref part="J6" gate="G$1" pin="14"/>
 </segment>
 </net>

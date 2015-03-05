@@ -95,7 +95,7 @@ void TimerInit(void)
     // Initalize all of the RC Servo variables
     for (i = 0; i < RC_SERVO_COUNT; i++)
     {
-        RCServo_Enable[i] = TRUE;
+        RCServo_Enable[i] = RC_SERVO_ENABLE_ON;
         RCServo_MaxWidth[i] = TMR3_MS_TO_TICKS(2);
         RCServo_MinWidth[i] = TMR3_MS_TO_TICKS(1);
         RCServo_TargetWidth[i] = RCServo_Scale(0x80, i);

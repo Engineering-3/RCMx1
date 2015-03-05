@@ -52,7 +52,7 @@ UINT8 GPIO_Invert = 0;
 
 // RC Servo pins 1-8
 UINT8 RCServo_IO = 0;
-UINT8 RCServo_Dir = 0;
+UINT8 RCServo_Dir = 0;                          // Holds register 0x21 contents, used when pins are in GPIO mode
 UINT8 RCServo_Invert = 0;
 UINT8 RCServo_Enable[RC_SERVO_COUNT] = {0};
 UINT16 RCServo_MaxWidth[RC_SERVO_COUNT] = {0};

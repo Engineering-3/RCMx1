@@ -51,14 +51,14 @@ void ADCInit(void)
     UINT8 i;
 
     ADCON2bits.ADFM = 1;            // Right justified
-    AnalogWriteEnable(0x7F, 0x7F);  // Set up all analogs as analog inputs, not GPIO
+    AnalogWriteEnable(0x00, 0x00);  // Set up all analogs as analog inputs, not GPIO
     // TRIS bits set in system.c
     ADCON2bits.ADCS = 0b110;        // Use FOsc/64 as TAD clock
     ADCON2bits.ACQT = 0b111;        // Use 20 Tad for acq time
     // Turn the ADC on
     ADCON0bits.ADON = 1;
 
-    AnalogGPIOWriteDirection(0x7F, 0x7F);
+    AnalogGPIOWriteDirection(0x00, 0x00);
     
     for (i=0; i < 14; i++)
     {

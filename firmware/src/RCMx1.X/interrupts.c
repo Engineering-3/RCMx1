@@ -150,7 +150,7 @@ void InterruptHandlerHigh(void)
                     if (RCServo_FilterLastCommandTime[RCServo_CurrentChannel] > RCServo_SafetyTimeout[RCServo_CurrentChannel])
                     {
                         // Turn the channel off
-                        RCServo_Enable[RCServo_CurrentChannel] = FALSE;
+                        RCServo_Enable[RCServo_CurrentChannel] = RC_SERVO_ENABLE_OFF;
 
                         // Also clear out the current PWM and target PWM values
                         RCServo_TargetWidth[RCServo_CurrentChannel] = RCServo_Scale(0x80, RCServo_CurrentChannel);
@@ -158,7 +158,7 @@ void InterruptHandlerHigh(void)
                     }
                 }
 
-                if (RCServo_Enable[RCServo_CurrentChannel])
+                if (RCServo_Enable[RCServo_CurrentChannel] == RC_SERVO_ENABLE_ON)
                 {
                     // If slow move is enabled, take care of moveing the target
                     if (RCServo_SlowMove[RCServo_CurrentChannel] != 0x00)
@@ -358,7 +358,8 @@ void InterruptHandlerLow(void)
                         // GPIO read direction, 1 byte
                     case 0x11:
                         // Execute the read of the GPIO direction bits
-                        GPIO_Dir = GPIOPinMapIn(TRISB & RCMx1_PORTB_MASK);
+                        // As of version 0.8, we now used inverted logic for this register
+                        GPIO_Dir = GPIOPinMapIn(~(TRISB & RCMx1_PORTB_MASK));
                         SSP2BUF = GPIO_Dir;
                         break;
 
@@ -383,8 +384,6 @@ void InterruptHandlerLow(void)
 
                         // RC Servo read direction, 1 byte
                     case 0x21:
-                        // Execute the read of the RC Servo direction bits
-                        RCServo_Dir = RCServoGPIOReadDirection();
                         SSP2BUF = RCServo_Dir;
                         break;
 
@@ -399,19 +398,19 @@ void InterruptHandlerLow(void)
                         // Send the RC Servo enable bits
                         SSP2BUF =
                             RCServo_Enable[0]
-                            ||
+                            |
                             RCServo_Enable[1] << 1
-                            ||
+                            |
                             RCServo_Enable[2] << 2
-                            ||
+                            |
                             RCServo_Enable[3] << 3
-                            ||
+                            |
                             RCServo_Enable[4] << 4
-                            ||
+                            |
                             RCServo_Enable[5] << 5
-                            ||
+                            |
                             RCServo_Enable[6] << 6
-                            ||
+                            |
                             RCServo_Enable[7] << 7;
                         break;
 
@@ -420,19 +419,19 @@ void InterruptHandlerLow(void)
                         // Execute the read of the RCServo filter enable bits
                         SSP2BUF =
                             RCServo_FilterEnabled[0]
-                            ||
+                            |
                             RCServo_FilterEnabled[1] << 1
-                            ||
+                            |
                             RCServo_FilterEnabled[2] << 2
-                            ||
+                            |
                             RCServo_FilterEnabled[3] << 3
-                            ||
+                            |
                             RCServo_FilterEnabled[4] << 4
-                            ||
+                            |
                             RCServo_FilterEnabled[5] << 5
-                            ||
+                            |
                             RCServo_FilterEnabled[6] << 6
-                            ||
+                            |
                             RCServo_FilterEnabled[7] << 7;
                         break;
 
@@ -638,14 +637,15 @@ void InterruptHandlerLow(void)
                         case 0x10:
                             GPIO_IO = Data[1] & RCMx1_PORTB_MASK;
                             // Write out data to GPIO ports
-                            LATB = (TRISB & ~RCMx1_PORTB_MASK) | GPIOPinMapOut(GPIO_IO);
+                            LATB = (LATB & ~RCMx1_PORTB_MASK) | GPIOPinMapOut(GPIO_IO);
                             break;
 
                             // GPIO direction write, 1 byte
                         case 0x11:
                             GPIO_Dir = Data[1] & RCMx1_PORTB_MASK;
                             // Write out direction to GPIO ports
-                            TRISB = (TRISB & ~RCMx1_PORTB_MASK) | GPIOPinMapOut(GPIO_Dir);
+                            // As of version 0.8, we now used inverted logic for this register
+                            TRISB = (TRISB & ~RCMx1_PORTB_MASK) | ~(GPIOPinMapOut(GPIO_Dir));
                             break;
 
                             // GPIO write pull up, 1 byte
@@ -688,26 +688,14 @@ void InterruptHandlerLow(void)
 
                             // RC Servo enable bits write, 1 byte
                         case 0x24:
-                            RCServo_Enable[0] = (Data[1] & 0x01);
-                            RCServo_Enable[1] = (Data[1] & 0x02) >> 1;
-                            RCServo_Enable[2] = (Data[1] & 0x04) >> 2;
-                            RCServo_Enable[3] = (Data[1] & 0x08) >> 3;
-                            RCServo_Enable[4] = (Data[1] & 0x10) >> 4;
-                            RCServo_Enable[5] = (Data[1] & 0x20) >> 5;
-                            RCServo_Enable[6] = (Data[1] & 0x40) >> 6;
-                            RCServo_Enable[7] = (Data[1] & 0x80) >> 7;
+                            RCServoSetEnables(Data[1]);
+                            RCServoGPIOWriteDirection(RCServo_Dir);
                             break;
 
                             // RC Servo filter enable bits write, 1 byte
                         case 0x25:
-                            RCServo_FilterEnabled[0] = (Data[1] & 0x01);
-                            RCServo_FilterEnabled[1] = (Data[1] & 0x02) >> 1;
-                            RCServo_FilterEnabled[2] = (Data[1] & 0x04) >> 2;
-                            RCServo_FilterEnabled[3] = (Data[1] & 0x08) >> 3;
-                            RCServo_FilterEnabled[4] = (Data[1] & 0x10) >> 4;
-                            RCServo_FilterEnabled[5] = (Data[1] & 0x20) >> 5;
-                            RCServo_FilterEnabled[6] = (Data[1] & 0x40) >> 6;
-                            RCServo_FilterEnabled[7] = (Data[1] & 0x80) >> 7;
+                            // For now, do nothing
+                            //RCServoSetFilterEnables(Data[1]);
                             break;
 
                             // RC Servo motor position value write, 1 byte
@@ -722,11 +710,12 @@ void InterruptHandlerLow(void)
                             // If this was a zero data byte (0x00) then disable the servo
                             if (Data[1] == 0x00)
                             {
-                                RCServo_Enable[Register - 0x31] = FALSE;
+                                RCServo_Enable[Register - 0x31] = RC_SERVO_ENABLE_OFF;
+                                RCServoGPIOWriteDirection(RCServo_Dir);
                             }
                             else
                             {
-                                RCServo_Enable[Register - 0x31] = TRUE;
+                                RCServo_Enable[Register - 0x31] = RC_SERVO_ENABLE_ON;
                             }
                             RCServo_TargetWidth[Register - 0x31] = RCServo_Scale(Data[1], Register - 0x31);
                             // Record that we had a command at this time

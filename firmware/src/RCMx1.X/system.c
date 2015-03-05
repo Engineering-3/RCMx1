@@ -105,8 +105,6 @@ void IOInit(void)
     TRISF = 0xFF;
     TRISG = 0x27;
 
-    AnalogGPIOWriteDirection(0x7F, 0x7F);
-
     INTCON2bits.RBPU = GPIO_PULLUP_DISABLE;
     GPIO_PullUp = 0;
     
@@ -241,141 +239,166 @@ UINT8 RCServoGPIOReadDirection(void)
     return Result;
 }
 
-// Write the TRIS bits for RCServo bits
+// Write the TRIS bits for RCServo bits, except if bit is in RC Servo mode,
+// then make sure TRIS is set as an output
 void RCServoGPIOWriteDirection(UINT8 Input)
 {
-    if (Input & 0x01)
+    if ((Input & 0x01) && (RCServo_Enable[0] == RC_SERVO_ENABLE_OFF))
     {
-        RCSERVO1_TRIS = 1;
+        RCSERVO1_TRIS = INPUT;
     }
     else
     {
-        RCSERVO1_TRIS = 0;
+        RCSERVO1_TRIS = OUTPUT;
     }
-    if (Input & 0x02)
+    if ((Input & 0x02) && (RCServo_Enable[1] == RC_SERVO_ENABLE_OFF))
     {
-        RCSERVO2_TRIS = 1;
-    }
-    else
-    {
-        RCSERVO2_TRIS = 0;
-    }
-    if (Input & 0x04)
-    {
-        RCSERVO3_TRIS = 1;
+        RCSERVO2_TRIS = INPUT;
     }
     else
     {
-        RCSERVO3_TRIS = 0;
+        RCSERVO2_TRIS = OUTPUT;
     }
-    if (Input & 0x08)
+    if ((Input & 0x04) && (RCServo_Enable[2] == RC_SERVO_ENABLE_OFF))
     {
-        RCSERVO4_TRIS = 1;
-    }
-    else
-    {
-        RCSERVO4_TRIS = 0;
-    }
-    if (Input & 0x10)
-    {
-        RCSERVO5_TRIS = 1;
+        RCSERVO3_TRIS = INPUT;
     }
     else
     {
-        RCSERVO5_TRIS = 0;
+        RCSERVO3_TRIS = OUTPUT;
     }
-    if (Input & 0x20)
+    if ((Input & 0x08) && (RCServo_Enable[3] == RC_SERVO_ENABLE_OFF))
     {
-        RCSERVO6_TRIS = 1;
-    }
-    else
-    {
-        RCSERVO6_TRIS = 0;
-    }
-    if (Input & 0x40)
-    {
-        RCSERVO7_TRIS = 1;
+        RCSERVO4_TRIS = INPUT;
     }
     else
     {
-        RCSERVO7_TRIS = 0;
+        RCSERVO4_TRIS = OUTPUT;
     }
-    if (Input & 0x80)
+    if ((Input & 0x10) && (RCServo_Enable[4] == RC_SERVO_ENABLE_OFF))
     {
-        RCSERVO8_TRIS = 1;
+        RCSERVO5_TRIS = INPUT;
     }
     else
     {
-        RCSERVO8_TRIS = 0;
+        RCSERVO5_TRIS = OUTPUT;
+    }
+    if ((Input & 0x20) && (RCServo_Enable[5] == RC_SERVO_ENABLE_OFF))
+    {
+        RCSERVO6_TRIS = INPUT;
+    }
+    else
+    {
+        RCSERVO6_TRIS = OUTPUT;
+    }
+    if ((Input & 0x40) && (RCServo_Enable[6] == RC_SERVO_ENABLE_OFF))
+    {
+        RCSERVO7_TRIS = INPUT;
+    }
+    else
+    {
+        RCSERVO7_TRIS = OUTPUT;
+    }
+    if ((Input & 0x80) && (RCServo_Enable[7] == RC_SERVO_ENABLE_OFF))
+    {
+        RCSERVO8_TRIS = INPUT;
+    }
+    else
+    {
+        RCSERVO8_TRIS = OUTPUT;
     }
 }
 
 // Write a byte out to RCServo pins as GPIOs
 void RCServoGPIOWrite(UINT8 Input)
 {
-    if (Input & 0x01)
+    if (RCServo_Enable[0] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO1_PIN = 1;
+        if (Input & 0x01)
+        {
+            RCSERVO1_PIN = 1;
+        }
+        else
+        {
+            RCSERVO1_PIN = 0;
+        }
     }
-    else
+    if (RCServo_Enable[1] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO1_PIN = 0;
+        if (Input & 0x02)
+        {
+            RCSERVO2_PIN = 1;
+        }
+        else
+        {
+            RCSERVO2_PIN = 0;
+        }
     }
-    if (Input & 0x02)
+    if (RCServo_Enable[2] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO2_PIN = 1;
+        if (Input & 0x04)
+        {
+            RCSERVO3_PIN = 1;
+        }
+        else
+        {
+            RCSERVO3_PIN = 0;
+        }
     }
-    else
+    if (RCServo_Enable[3] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO2_PIN = 0;
+        if (Input & 0x08)
+        {
+            RCSERVO4_PIN = 1;
+        }
+        else
+        {
+            RCSERVO4_PIN = 0;
+        }
     }
-    if (Input & 0x04)
+    if (RCServo_Enable[4] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO3_PIN = 1;
+        if (Input & 0x10)
+        {
+            RCSERVO5_PIN = 1;
+        }
+        else
+        {
+            RCSERVO5_PIN = 0;
+        }
     }
-    else
+    if (RCServo_Enable[5] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO3_PIN = 0;
+        if (Input & 0x20)
+        {
+            RCSERVO6_PIN = 1;
+        }
+        else
+        {
+            RCSERVO6_PIN = 0;
+        }
     }
-    if (Input & 0x08)
+    if (RCServo_Enable[6] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO4_PIN = 1;
+        if (Input & 0x40)
+        {
+            RCSERVO7_PIN = 1;
+        }
+        else
+        {
+            RCSERVO7_PIN = 0;
+        }
     }
-    else
+    if (RCServo_Enable[7] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO4_PIN = 0;
-    }
-    if (Input & 0x10)
-    {
-        RCSERVO5_PIN = 1;
-    }
-    else
-    {
-        RCSERVO5_PIN = 0;
-    }
-    if (Input & 0x20)
-    {
-        RCSERVO6_PIN = 1;
-    }
-    else
-    {
-        RCSERVO6_PIN = 0;
-    }
-    if (Input & 0x40)
-    {
-        RCSERVO7_PIN = 1;
-    }
-    else
-    {
-        RCSERVO7_PIN = 0;
-    }
-    if (Input & 0x80)
-    {
-        RCSERVO8_PIN = 1;
-    }
-    else
-    {
-        RCSERVO8_PIN = 0;
+        if (Input & 0x80)
+        {
+            RCSERVO8_PIN = 1;
+        }
+        else
+        {
+            RCSERVO8_PIN = 0;
+        }
     }
 }
 
@@ -425,119 +448,201 @@ UINT8 RCServoGPIOInvert(UINT8 Input)
     return (Input ^ RCServo_Invert);
 }
 
+// Take a byte of data, and update the RC Servo enable bits
+void RCServoSetEnables(UINT8 DataByte)
+{
+    UINT8 i;
+    for (i=0; i < 8; i++)
+    {
+        if (DataByte & (1 << i))
+        {
+            // A 1 in the bit's position means GPIO mode
+            RCServo_Enable[i] = RC_SERVO_ENABLE_OFF;
+        }
+        else
+        {
+            // A 0 means RC Servo mode
+            RCServo_Enable[i] = RC_SERVO_ENABLE_ON;
+        }
+    }
+}
+
+// Take a byte of data, and update the RC Servo filter enable bits
+void RCServoSetFilterEnables(UINT8 DataByte)
+{
+    UINT8 i;
+    for (i=0; i < 8; i++)
+    {
+        if (DataByte & (1 << i))
+        {
+            // A 1 in the bit's position means the filter is turned on
+            RCServo_FilterEnabled[i] = RC_SERVO_FILTER_OFF;
+        }
+        else
+        {
+            // A 0 means the filter is turned off
+            RCServo_FilterEnabled[i] = RC_SERVO_FILTER_ON;
+        }
+    }
+}
+
+// Write out data to the Analog pins treated as GPIO pins, if the pin is
+// set to GPIO mode (i.e. ANALOG mode is disabled on it)
 void AnalogGPIOWrite(UINT8 Low, UINT8 High)
 {
-    if (Low & 0x01)
+    if (((Analog_Enable[0] & 0x01)) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG1_PIN = 1;
+        if (Low & 0x01)
+        {
+            ANALOG1_PIN = 1;
+        }
+        else
+        {
+            ANALOG1_PIN = 0;
+        }
     }
-    else
+    if (((Analog_Enable[0] & 0x02) >> 1) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG1_PIN = 0;
+        if (Low & 0x02)
+        {
+            ANALOG2_PIN = 1;
+        }
+        else
+        {
+            ANALOG2_PIN = 0;
+        }
     }
-    if (Low & 0x02)
+    if (((Analog_Enable[0] & 0x04) >> 2) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG2_PIN = 1;
+        if (Low & 0x04)
+        {
+            ANALOG3_PIN = 1;
+        }
+        else
+        {
+            ANALOG3_PIN = 0;
+        }
     }
-    else
+    if (((Analog_Enable[0] & 0x08) >> 3) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG2_PIN = 0;
+        if (Low & 0x08)
+        {
+            ANALOG4_PIN = 1;
+        }
+        else
+        {
+            ANALOG4_PIN = 0;
+        }
     }
-    if (Low & 0x04)
+    if (((Analog_Enable[0] & 0x10) >> 4) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG3_PIN = 1;
+        if (Low & 0x10)
+        {
+            ANALOG5_PIN = 1;
+        }
+        else
+        {
+            ANALOG5_PIN = 0;
+        }
     }
-    else
+    if (((Analog_Enable[0] & 0x20) >> 5) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG3_PIN = 0;
+        if (Low & 0x20)
+        {
+            ANALOG6_PIN = 1;
+        }
+        else
+        {
+            ANALOG6_PIN = 0;
+        }
     }
-    if (Low & 0x08)
+    if (((Analog_Enable[0] & 0x40) >> 6) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG4_PIN = 1;
+        if (Low & 0x40)
+        {
+            ANALOG7_PIN = 1;
+        }
+        else
+        {
+            ANALOG7_PIN = 0;
+        }
     }
-    else
+    if (((Analog_Enable[1] & 0x01)) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG4_PIN = 0;
+        if (High & 0x01)
+        {
+            ANALOG8_PIN = 1;
+        }
+        else
+        {
+            ANALOG8_PIN = 0;
+        }
     }
-    if (Low & 0x10)
+    if (((Analog_Enable[1] & 0x02) >> 1) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG5_PIN = 1;
+        if (High & 0x02)
+        {
+            ANALOG9_PIN = 1;
+        }
+        else
+        {
+            ANALOG9_PIN = 0;
+        }
     }
-    else
+    if (((Analog_Enable[1] & 0x04) >> 2) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG5_PIN = 0;
+        if (High & 0x04)
+        {
+            ANALOG10_PIN = 1;
+        }
+        else
+        {
+            ANALOG10_PIN = 0;
+        }
     }
-    if (Low & 0x20)
+    if (((Analog_Enable[1] & 0x08) >> 3) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG6_PIN = 1;
+        if (High & 0x08)
+        {
+            ANALOG11_PIN = 1;
+        }
+        else
+        {
+            ANALOG11_PIN = 0;
+        }
     }
-    else
+    if (((Analog_Enable[1] & 0x10) >> 4) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG6_PIN = 0;
+        if (High & 0x10)
+        {
+            ANALOG12_PIN = 1;
+        }
+        else
+        {
+            ANALOG12_PIN = 0;
+        }
     }
-    if (Low & 0x40)
+    if (((Analog_Enable[1] & 0x20) >> 5) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG7_PIN = 1;
+        if (High & 0x20)
+        {
+            ANALOG13_PIN = 1;
+        }
+        else
+        {
+            ANALOG13_PIN = 0;
+        }
     }
-    else
+    if (((Analog_Enable[1] & 0x40) >> 6) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG7_PIN = 0;
-    }
-    if (High & 0x01)
-    {
-        ANALOG8_PIN = 1;
-    }
-    else
-    {
-        ANALOG8_PIN = 0;
-    }
-    if (High & 0x02)
-    {
-        ANALOG9_PIN = 1;
-    }
-    else
-    {
-        ANALOG9_PIN = 0;
-    }
-    if (High & 0x04)
-    {
-        ANALOG10_PIN = 1;
-    }
-    else
-    {
-        ANALOG10_PIN = 0;
-    }
-    if (High & 0x08)
-    {
-        ANALOG11_PIN = 1;
-    }
-    else
-    {
-        ANALOG11_PIN = 0;
-    }
-    if (High & 0x10)
-    {
-        ANALOG12_PIN = 1;
-    }
-    else
-    {
-        ANALOG12_PIN = 0;
-    }
-    if (High & 0x20)
-    {
-        ANALOG13_PIN = 1;
-    }
-    else
-    {
-        ANALOG13_PIN = 0;
-    }
-    if (High & 0x40)
-    {
-        ANALOG14_PIN = 1;
-    }
-    else
-    {
-        ANALOG14_PIN = 0;
+        if (High & 0x40)
+        {
+            ANALOG14_PIN = 1;
+        }
+        else
+        {
+            ANALOG14_PIN = 0;
+        }
     }
 }
 
@@ -611,121 +716,167 @@ void AnalogGPIORead(UINT8 * LowByte, UINT8 * HighByte)
 
 // Take two bytes (high byte and low byte) and write them
 // into the analog 'ports' direction bits.
+// Note that this bits are inverted - use a 1 to make a pin an output,
+// and a 0 to make it an input.
+// Note also that any bits that are not in GPIO mode will not have their
+// directions changed.
 void AnalogGPIOWriteDirection(UINT8 Low, UINT8 High)
 {
-    if (Low & 0x01)
+    if (((Analog_Enable[0] & 0x01)) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG1_TRIS = 1;
+        if (((Low & 0x01)) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG1_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG1_TRIS = INPUT;
+        }
     }
-    else
+    if (((Analog_Enable[0] & 0x02) >> 1) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG1_TRIS = 0;
+        if (((Low & 0x02) >> 1) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG2_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG2_TRIS = INPUT;
+        }
     }
-    if (Low & 0x02)
+    if (((Analog_Enable[0] & 0x04) >> 2) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG2_TRIS = 1;
+        if (((Low & 0x04) >> 2) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG3_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG3_TRIS = INPUT;
+        }
     }
-    else
+    if (((Analog_Enable[0] & 0x08) >> 3) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG2_TRIS = 0;
+        if (((Low & 0x08) >> 3) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG4_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG4_TRIS = INPUT;
+        }
     }
-    if (Low & 0x04)
+    if (((Analog_Enable[0] & 0x10) >> 4) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG3_TRIS = 1;
+        if (((Low & 0x10) >> 4) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG5_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG5_TRIS = INPUT;
+        }
     }
-    else
+    if (((Analog_Enable[0] & 0x20) >> 5) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG3_TRIS = 0;
+        if (((Low & 0x20) >> 5) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG6_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG6_TRIS = INPUT;
+        }
     }
-    if (Low & 0x08)
+    if (((Analog_Enable[0] & 0x40) >> 6) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG4_TRIS = 1;
+        if (((Low & 0x40) >> 6) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG7_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG7_TRIS = INPUT;
+        }
     }
-    else
+    if (((Analog_Enable[1] & 0x01)) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG4_TRIS = 0;
+        if (((High & 0x01)) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG8_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG8_TRIS = INPUT;
+        }
     }
-    if (Low & 0x10)
+    if (((Analog_Enable[1] & 0x02) >> 1) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG5_TRIS = 1;
+        if (((High & 0x02) >> 1) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG9_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG9_TRIS = INPUT;
+        }
     }
-    else
+    if (((Analog_Enable[1] & 0x04) >> 2) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG5_TRIS = 0;
+        if (((High & 0x04) >> 2) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG10_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG10_TRIS = INPUT;
+        }
     }
-    if (Low & 0x20)
+    if (((Analog_Enable[1] & 0x08) >> 3) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG6_TRIS = 1;
+        if (((High & 0x08) >> 3) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG11_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG11_TRIS = INPUT;
+        }
     }
-    else
+    if (((Analog_Enable[1] & 0x10) >> 4) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG6_TRIS = 0;
+        if (((High & 0x10) >> 4) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG12_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG12_TRIS = INPUT;
+        }
     }
-    if (Low & 0x40)
+    if (((Analog_Enable[1] & 0x20) >> 5) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG7_TRIS = 1;
+        if (((High & 0x20) >> 5) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG13_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG13_TRIS = INPUT;
+        }
     }
-    else
+    if (((Analog_Enable[1] & 0x40) >> 6) == ANALOG_ENABLE_REGISTER_BIT_DISABLE)
     {
-        ANALOG7_TRIS = 0;
+        if (((High & 0x40) >> 6) == ANALOG_DIRECTION_OUTPUT)
+        {
+            ANALOG14_TRIS = OUTPUT;
+        }
+        else
+        {
+            ANALOG14_TRIS = INPUT;
+        }
     }
-    if (High & 0x01)
-    {
-        ANALOG8_TRIS = 1;
-    }
-    else
-    {
-        ANALOG8_TRIS = 0;
-    }
-    if (High & 0x02)
-    {
-        ANALOG9_TRIS = 1;
-    }
-    else
-    {
-        ANALOG9_TRIS = 0;
-    }
-    if (High & 0x04)
-    {
-        ANALOG10_TRIS = 1;
-    }
-    else
-    {
-        ANALOG10_TRIS = 0;
-    }
-    if (High & 0x08)
-    {
-        ANALOG11_TRIS = 1;
-    }
-    else
-    {
-        ANALOG11_TRIS = 0;
-    }
-    if (High & 0x10)
-    {
-        ANALOG12_TRIS = 1;
-    }
-    else
-    {
-        ANALOG12_TRIS = 0;
-    }
-    if (High & 0x20)
-    {
-        ANALOG13_TRIS = 1;
-    }
-    else
-    {
-        ANALOG13_TRIS = 0;
-    }
-    if (High & 0x40)
-    {
-        ANALOG14_TRIS = 1;
-    }
-    else
-    {
-        ANALOG14_TRIS = 0;
-    }
-
+    
     Analog_Dir[0] = Low;
     Analog_Dir[1] = High;
 }
@@ -736,61 +887,62 @@ void AnalogGPIOReadDirection(UINT8 * LowByte, UINT8 * HighByte)
 {
     UINT8 Low = 0;
     UINT8 High = 0;
-    if (ANALOG1_TRIS == 1)
+    if (ANALOG1_TRIS == OUTPUT)
     {
-        Low = Low | 0x01;
+        // Note, using this method, we depend on ANALOG_DIRECTION_OUTPUT to be a 1
+        Low = Low | (ANALOG_DIRECTION_OUTPUT);
     }
-    if (ANALOG2_TRIS == 1)
+    if (ANALOG2_TRIS == OUTPUT)
     {
-        Low = Low | 0x02;
+        Low = Low | (ANALOG_DIRECTION_OUTPUT << 1);
     }
-    if (ANALOG3_TRIS == 1)
+    if (ANALOG3_TRIS == OUTPUT)
     {
-        Low = Low | 0x04;
+        Low = Low | (ANALOG_DIRECTION_OUTPUT << 2);
     }
-    if (ANALOG4_TRIS == 1)
+    if (ANALOG4_TRIS == OUTPUT)
     {
-        Low = Low | 0x08;
+        Low = Low | (ANALOG_DIRECTION_OUTPUT << 3);
     }
-    if (ANALOG5_TRIS == 1)
+    if (ANALOG5_TRIS == OUTPUT)
     {
-        Low = Low | 0x10;
+        Low = Low | (ANALOG_DIRECTION_OUTPUT << 4);
     }
-    if (ANALOG6_TRIS == 1)
+    if (ANALOG6_TRIS == OUTPUT)
     {
-        Low = Low | 0x20;
+        Low = Low | (ANALOG_DIRECTION_OUTPUT << 5);
     }
-    if (ANALOG7_TRIS == 1)
+    if (ANALOG7_TRIS == OUTPUT)
     {
-        Low = Low | 0x40;
+        Low = Low | (ANALOG_DIRECTION_OUTPUT << 6);
     }
-    if (ANALOG8_TRIS == 1)
+    if (ANALOG8_TRIS == OUTPUT)
     {
-        High = High | 0x01;
+        High = High | (ANALOG_DIRECTION_OUTPUT);
     }
-    if (ANALOG9_TRIS == 1)
+    if (ANALOG9_TRIS == OUTPUT)
     {
-        High = High | 0x02;
+        High = High | (ANALOG_DIRECTION_OUTPUT << 1);
     }
-    if (ANALOG10_TRIS == 1)
+    if (ANALOG10_TRIS == OUTPUT)
     {
-        High = High | 0x04;
+        High = High | (ANALOG_DIRECTION_OUTPUT << 2);
     }
-    if (ANALOG11_TRIS == 1)
+    if (ANALOG11_TRIS == OUTPUT)
     {
-        High = High | 0x08;
+        High = High | (ANALOG_DIRECTION_OUTPUT << 3);
     }
-    if (ANALOG12_TRIS == 1)
+    if (ANALOG12_TRIS == OUTPUT)
     {
-        High = High | 0x10;
+        High = High | (ANALOG_DIRECTION_OUTPUT << 4);
     }
-    if (ANALOG13_TRIS == 1)
+    if (ANALOG13_TRIS == OUTPUT)
     {
-        High = High | 0x20;
+        High = High | (ANALOG_DIRECTION_OUTPUT << 5);
     }
-    if (ANALOG14_TRIS == 1)
+    if (ANALOG14_TRIS == OUTPUT)
     {
-        High = High | 0x40;
+        High = High | (ANALOG_DIRECTION_OUTPUT << 6);
     }
     *LowByte = Low;
     *HighByte = High;
@@ -799,138 +951,127 @@ void AnalogGPIOReadDirection(UINT8 * LowByte, UINT8 * HighByte)
 // Take a low and high enable byte values, and 
 // set the  Analog_Enable[] values as well as
 // ANCO0 and ANCON1 registers.
-// Also set the specified bits to be inputs
+// Default value is 0x0000 which is all pins
+// set to ANALOG. Set a bit to 1 to turn off analog
+// functions on that pin and just do GPIO with it.
 void  AnalogWriteEnable(UINT8 Low, UINT8 High)
 {
-    Analog_Enable[0] = Low;
-    Analog_Enable[1] = High;
-
-    if (Low & 0x01)
+    if (((Low & 0x01)) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG1_ENABLE = 1;
-        ANALOG1_TRIS = INPUT;
+        ANALOG1_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG1_ENABLE = 0;
+        ANALOG1_ENABLE = ANALOG_DISABLE;
     }
-    if (Low & 0x02)
+    if (((Low & 0x02) >> 1) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
+    {
+        ANALOG2_ENABLE = ANALOG_ENABLE;
+    }
+    else
     {
         ANALOG2_ENABLE = 1;
-        ANALOG2_TRIS = INPUT;
+    }
+    if (((Low & 0x04) >> 2) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
+    {
+        ANALOG3_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG2_ENABLE = 0;
+        ANALOG3_ENABLE = ANALOG_DISABLE;
     }
-    if (Low & 0x04)
+    if (((Low & 0x08) >> 3) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG3_ENABLE = 1;
-        ANALOG3_TRIS = INPUT;
+        ANALOG4_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG3_ENABLE = 0;
+        ANALOG4_ENABLE = ANALOG_DISABLE;
     }
-    if (Low & 0x08)
+    if (((Low & 0x10) >> 4) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG4_ENABLE = 1;
-        ANALOG4_TRIS = INPUT;
+        ANALOG5_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG4_ENABLE = 0;
+        ANALOG5_ENABLE = ANALOG_DISABLE;
     }
-    if (Low & 0x10)
+    if (((Low & 0x20) >> 5) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG5_ENABLE = 1;
-        ANALOG5_TRIS = INPUT;
+        ANALOG6_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG5_ENABLE = 0;
+        ANALOG6_ENABLE = ANALOG_DISABLE;
     }
-    if (Low & 0x20)
+    if (((Low & 0x40) >> 6) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG6_ENABLE = 1;
-        ANALOG6_TRIS = INPUT;
+        ANALOG7_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG6_ENABLE = 0;
+        ANALOG7_ENABLE = ANALOG_DISABLE;
     }
-    if (Low & 0x40)
+    if (((High & 0x01)) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG7_ENABLE = 1;
-        ANALOG7_TRIS = INPUT;
+        ANALOG8_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG7_ENABLE = 0;
+        ANALOG8_ENABLE = ANALOG_DISABLE;
     }
-    if (High & 0x01)
+    if (((High & 0x02) >> 1) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG8_ENABLE = 1;
-        ANALOG8_TRIS = INPUT;
+        ANALOG9_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG8_ENABLE = 0;
+        ANALOG9_ENABLE = ANALOG_DISABLE;
     }
-    if (High & 0x02)
+    if (((High & 0x04) >> 2) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG9_ENABLE = 1;
-        ANALOG9_TRIS = INPUT;
+        ANALOG10_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG9_ENABLE = 0;
+        ANALOG10_ENABLE = ANALOG_DISABLE;
     }
-    if (High & 0x04)
+    if (((High & 0x08) >> 3) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG10_ENABLE = 1;
-        ANALOG10_TRIS = INPUT;
+        ANALOG11_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG10_ENABLE = 0;
+        ANALOG11_ENABLE = ANALOG_DISABLE;
     }
-    if (High & 0x08)
+    if (((High & 0x10) >> 4) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG11_ENABLE = 1;
-        ANALOG11_TRIS = INPUT;
+        ANALOG12_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG11_ENABLE = 0;
+        ANALOG12_ENABLE = ANALOG_DISABLE;
     }
-    if (High & 0x10)
+    if (((High & 0x20) >> 5) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG12_ENABLE = 1;
-        ANALOG12_TRIS = INPUT;
+        ANALOG13_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG12_ENABLE = 0;
+        ANALOG13_ENABLE = ANALOG_DISABLE;
     }
-    if (High & 0x20)
+    if (((High & 0x40) >> 6) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {
-        ANALOG13_ENABLE = 1;
-        ANALOG13_TRIS = INPUT;
+        ANALOG14_ENABLE = ANALOG_ENABLE;
     }
     else
     {
-        ANALOG13_ENABLE = 0;
+        ANALOG14_ENABLE = ANALOG_DISABLE;
     }
-    if (High & 0x40)
-    {
-        ANALOG14_ENABLE = 1;
-        ANALOG14_TRIS = INPUT;
-    }
-    else
-    {
-        ANALOG14_ENABLE = 0;
-    }
+
+    Analog_Enable[0] = Low;
+    Analog_Enable[1] = High;
+    AnalogGPIOWriteDirection(Analog_Dir[0], Analog_Dir[1]);
 }
 
 // Take in an analog pin number - 1 (0 through 13)
