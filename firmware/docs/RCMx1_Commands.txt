@@ -259,15 +259,15 @@ Analog inputs (RP9 to RP22)
         Read/Write: Byte2: Analog Input GPIO invert bits for PN16 to PN22
 
     0xA4: Analog Input Enable bits                          2 bytes, read/write
-        Any bits set to 1 in this 14-bit register indicate that the corresponding 
+        Any bits set to 0 in this 14-bit register indicate that the corresponding 
         analog pin is in analog mode and can not be used for digital output. 
-        Any bits that are clear indicate that the analog pin is in digital 
-        input/output mode. 
+        Any bits that set to 1 indicate that the analog pin is in digital 
+        input/output mode, and thus can not be used for reading analog values.
         0 = Analog Input, 1 = GPIO
         Contains 0x0000 (all analog inputs) on boot.
 
         Read/Write: Byte1: Analog input enable bits for PN9 to PN15
-        Read/WRite: Byte2: Analog input enable bits for PN16 to PN22
+        Read/Write: Byte2: Analog input enable bits for PN16 to PN22
     
     0xB1 through 0xBE: Sensor Values                  2 bytes, read only
         0xB1 corresponds to PN9, 0xB2 to PN10, etc.

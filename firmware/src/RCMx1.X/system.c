@@ -949,7 +949,7 @@ void AnalogGPIOReadDirection(UINT8 * LowByte, UINT8 * HighByte)
 }
 
 // Take a low and high enable byte values, and 
-// set the  Analog_Enable[] values as well as
+// set the Analog_Enable[] values as well as
 // ANCO0 and ANCON1 registers.
 // Default value is 0x0000 which is all pins
 // set to ANALOG. Set a bit to 1 to turn off analog
