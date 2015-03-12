@@ -243,65 +243,121 @@ UINT8 RCServoGPIOReadDirection(void)
 // then make sure TRIS is set as an output
 void RCServoGPIOWriteDirection(UINT8 Input)
 {
-    if ((Input & 0x01) && (RCServo_Enable[0] == RC_SERVO_ENABLE_OFF))
+    if (RCServo_Enable[0] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO1_TRIS = INPUT;
+        if ((Input & 0x01) == RC_SERVO_DIRECTION_INPUT)
+        {
+            RCSERVO1_TRIS = INPUT;
+        }
+        else
+        {
+            RCSERVO1_TRIS = OUTPUT;
+        }
     }
     else
     {
         RCSERVO1_TRIS = OUTPUT;
     }
-    if ((Input & 0x02) && (RCServo_Enable[1] == RC_SERVO_ENABLE_OFF))
+    if (RCServo_Enable[1] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO2_TRIS = INPUT;
+        if (((Input & 0x02) >> 1) == RC_SERVO_DIRECTION_INPUT)
+        {
+            RCSERVO2_TRIS = INPUT;
+        }
+        else
+        {
+            RCSERVO2_TRIS = OUTPUT;
+        }
     }
     else
     {
         RCSERVO2_TRIS = OUTPUT;
     }
-    if ((Input & 0x04) && (RCServo_Enable[2] == RC_SERVO_ENABLE_OFF))
+    if (RCServo_Enable[2] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO3_TRIS = INPUT;
+        if (((Input & 0x04) >> 2) == RC_SERVO_DIRECTION_INPUT)
+        {
+            RCSERVO3_TRIS = INPUT;
+        }
+        else
+        {
+            RCSERVO3_TRIS = OUTPUT;
+        }
     }
     else
     {
         RCSERVO3_TRIS = OUTPUT;
     }
-    if ((Input & 0x08) && (RCServo_Enable[3] == RC_SERVO_ENABLE_OFF))
+    if (RCServo_Enable[3] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO4_TRIS = INPUT;
+        if (((Input & 0x08) >> 3) == RC_SERVO_DIRECTION_INPUT)
+        {
+            RCSERVO4_TRIS = INPUT;
+        }
+        else
+        {
+            RCSERVO4_TRIS = OUTPUT;
+        }
     }
     else
     {
         RCSERVO4_TRIS = OUTPUT;
     }
-    if ((Input & 0x10) && (RCServo_Enable[4] == RC_SERVO_ENABLE_OFF))
+    if (RCServo_Enable[4] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO5_TRIS = INPUT;
+        if (((Input & 0x10) >> 4) == RC_SERVO_DIRECTION_INPUT)
+        {
+            RCSERVO5_TRIS = INPUT;
+        }
+        else
+        {
+            RCSERVO5_TRIS = OUTPUT;
+        }
     }
     else
     {
         RCSERVO5_TRIS = OUTPUT;
     }
-    if ((Input & 0x20) && (RCServo_Enable[5] == RC_SERVO_ENABLE_OFF))
+    if (RCServo_Enable[5] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO6_TRIS = INPUT;
+        if (((Input & 0x20) >> 5) == RC_SERVO_DIRECTION_INPUT)
+        {
+            RCSERVO6_TRIS = INPUT;
+        }
+        else
+        {
+            RCSERVO6_TRIS = OUTPUT;
+        }
     }
     else
     {
         RCSERVO6_TRIS = OUTPUT;
     }
-    if ((Input & 0x40) && (RCServo_Enable[6] == RC_SERVO_ENABLE_OFF))
+    if (RCServo_Enable[6] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO7_TRIS = INPUT;
+        if (((Input & 0x40) >> 6) == RC_SERVO_DIRECTION_INPUT)
+        {
+            RCSERVO7_TRIS = INPUT;
+        }
+        else
+        {
+            RCSERVO7_TRIS = OUTPUT;
+        }
     }
     else
     {
         RCSERVO7_TRIS = OUTPUT;
     }
-    if ((Input & 0x80) && (RCServo_Enable[7] == RC_SERVO_ENABLE_OFF))
+    if (RCServo_Enable[7] == RC_SERVO_ENABLE_OFF)
     {
-        RCSERVO8_TRIS = INPUT;
+        if (((Input & 0x80) >> 7) == RC_SERVO_DIRECTION_INPUT)
+        {
+            RCSERVO8_TRIS = INPUT;
+        }
+        else
+        {
+            RCSERVO8_TRIS = OUTPUT;
+        }
     }
     else
     {

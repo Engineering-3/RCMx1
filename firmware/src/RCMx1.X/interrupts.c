@@ -587,6 +587,14 @@ void InterruptHandlerLow(void)
                         SSP2BUF = Motor_Value[Register - 0xD1];
                         break;
 
+                    case 0xD5:
+                    case 0xD6:
+                    case 0xD7:
+                    case 0xD8:
+                        // Send Motor saftey timeout values (1-byte)
+                        SSP2BUF = Motor_Safety_Timeout[Register - 0xD5];
+                        break;
+
                         // Values to send if an unknown register address is used
                     default:
                         SSP2BUF = 0xFF;
@@ -803,6 +811,15 @@ void InterruptHandlerLow(void)
                             // Now update the motor's PWM hardware
                             PWMUpdateValue(Register - 0xD1, Data[1]);
                             break;
+
+                            // Motor Safety Timeout registers, 1 byte
+                        case 0xD5:
+                        case 0xD6:
+                        case 0xD7:
+                        case 0xD8:
+                            Motor_Safety_Timeout[Register - 0xD5] = Data[1];
+                            break;
+
 
                             // Do nothing for unknown registers
                         default:

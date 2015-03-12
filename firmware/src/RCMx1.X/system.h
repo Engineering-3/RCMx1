@@ -50,7 +50,7 @@
 #define RCMX1_I2C_ADDRESS           0x38
 
 // Our firmware version number (1 byte)
-#define RCMX1_FIMRWARE_VERSION      0x08
+#define RCMX1_FIMRWARE_VERSION      0x09
 
 #define RCMx1_PORTB_MASK            0b00111111
 #define RCMx1_PORTB_RBPU_MASK       0b00000001
@@ -63,6 +63,10 @@
 // These must be defined this way so that the default for register 0x24 is 0x00
 #define RC_SERVO_ENABLE_OFF         1
 #define RC_SERVO_ENABLE_ON          0
+
+// Bit values for register 0x21
+#define RC_SERVO_DIRECTION_INPUT    0
+#define RC_SERVO_DIRECTION_OUTPUT   1
 
 // Bit values for register 0x25 RC Servo filter enable bits
 #define RC_SERVO_FILTER_OFF         0

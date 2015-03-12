@@ -63,7 +63,7 @@ UINT8 RCServo_MaxForward[RC_SERVO_COUNT] = {0};
 UINT8 RCServo_MaxReverse[RC_SERVO_COUNT] = {0};
 UINT8 RCServo_MaxAccel[RC_SERVO_COUNT] = {0};
 UINT8 RCServo_MaxDecel[RC_SERVO_COUNT] = {0};
-UINT8 RCServo_SafetyTimeout[RC_SERVO_COUNT] = {0};
+UINT8 RCServo_SafetyTimeout[RC_SERVO_COUNT] = {2};
 UINT8 RCServo_SlowMove[RC_SERVO_COUNT] = {0};
 
 // Current channel number (0 through 7) that RC servo output is on
@@ -85,6 +85,9 @@ UINT16 Analog_Value[16] = {0};
 
 // Motor outputs 1-4
 UINT8 Motor_Value[4] = {0};
+
+// Motor Saftey Timeout values 1-4
+UINT8 Motor_Safety_Timeout[4] = {2};
 
 volatile UINT16 TimerHeartbeat = 0;
 

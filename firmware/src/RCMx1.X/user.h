@@ -72,6 +72,7 @@ extern UINT16 Analog_Value[16];
 
 // Motor outputs 1-4
 extern UINT8 Motor_Value[4];
+extern UINT8 Motor_Safety_Timeout[4];
 
 // Countdown timer for heartbeat LED
 extern volatile UINT16 TimerHeartbeat;

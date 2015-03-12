@@ -117,8 +117,8 @@ RC Servo Control (PN1 to PN8)
             be set as outputs and have RC Servo mode turned off for value to appear on pin
     
     0x21: RC Servo GPIO direction bits                       1 byte, read/write
-        0 = output 1 = input
-        Register contains 0x00 on boot (all output)
+        1 = output 0 = input
+        Register contains 0x00 on boot (all input) same as 0x11
         The bits of this register only take effect when a RC Servo pin is in GPIO
         mode. If the pin is in RC Servo mode (corresponding bit in register 0x24 cleared)
         then the pin will always be an output no matter what is in this register.
@@ -200,7 +200,7 @@ RC Servo Control (PN1 to PN8)
         
         Read/Write: Byte1: max deceleration
      
-    0x81 through 0x88: RC Servo safety time-out in seconds    1 byte, read/write
+    0x81 through 0x88: RC Servo safety time-out in seconds    1 byte, read/write            TEST 
     (THIS FEATURE NOT CURRENTLY IMPLEMENTED)
         If the time between writes or reads to the Safety Timeout Reset exceed
         this value (on a per servo basis) in seconds then that servo will be 
@@ -431,7 +431,8 @@ Motor Driver Outputs
         
         Read/Write: Byte1: Motor Drive Control command value
 
-    0xD5 through 0xD8: Motor safety time-out in seconds      1 byte, read/write
+    0xD5 through 0xD8: Motor safety time-out in seconds      1 byte, read/write    TEST
+    (THIS FEATURE NOT CURRENTLY IMPLEMENTED)
         If the time between writes or reads to the Safety Timeout Reset exceed
         this value (on a per motor basis) in seconds then that motor will be 
         shut off. Each motor has it's own safety timeout value.
