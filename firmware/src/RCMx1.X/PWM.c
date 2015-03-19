@@ -118,26 +118,26 @@ void PWMUpdateValue(UINT8 MotorChannel, UINT8 NewValue)
         // Stop/coast
         if (NewValue == 0x00)
         {
-            CCPR2L = 0x00;
             CCPR6L = 0x00;
+            CCPR2L = 0x00;
         }
         // Stop/Break
         else if (NewValue == 0x80)
         {
-            CCPR2L = 0xFF;
             CCPR6L = 0xFF;
+            CCPR2L = 0xFF;
         }
         // Forward
         else if (NewValue > 0x80)
         {
-            CCPR2L = (NewValue - 0x80) << 1;
-            CCPR6L = 0x00;
+            CCPR6L = (NewValue - 0x80) << 1;
+            CCPR2L = 0x00;
         }
         // Reverse
         else
         {
-            CCPR2L = 0x00;
-            CCPR6L = (0x80 - NewValue) << 1;
+            CCPR6L = 0x00;
+            CCPR2L = (0x80 - NewValue) << 1;
         }
         break;
 
