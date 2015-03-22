@@ -50,7 +50,7 @@
 #define RCMX1_I2C_ADDRESS           0x38
 
 // Our firmware version number (1 byte)
-#define RCMX1_FIMRWARE_VERSION      0x0A
+#define RCMX1_FIMRWARE_VERSION      0x0B
 
 #define RCMx1_PORTB_MASK            0b00111111
 #define RCMx1_PORTB_RBPU_MASK       0b00000001
@@ -81,8 +81,8 @@
 #define ANALOG_ENABLE_REGISTER_BIT_DISABLE  1
 
 // These values are what get written to the PIC's analog enable register
-#define ANALOG_ENABLE               0
-#define ANALOG_DISABLE              1
+#define ANALOG_ENABLE               1
+#define ANALOG_DISABLE              0
 
 // For debug output bits
 #define DEBUG1                      LATCbits.LATC6
