@@ -551,7 +551,7 @@ void InterruptHandlerLow(void)
                         SecondByte = Analog_Invert[0];
                         break;
 
-                        // Analog read enable bits, 2 bytes
+                        // Analog read analog/GPIO enable bits, 2 bytes
                     case 0xA4:
                         // Execute the read of the Analog enable bits
                         SSP2BUF = Analog_Enable[1];
@@ -566,6 +566,18 @@ void InterruptHandlerLow(void)
                     case 0xB5:
                     case 0xB6:
                     case 0xB7:
+                        // Send analog values (2-bytes), but only if the
+                        // corresponding bit in 0xA4 is clear.
+                        if (~Analog_Enable[0] & (0x01 << (Register - 0xB1)) ) {
+                            SSP2BUF = Analog_Value[Register - 0xB1] >> 8;
+                            SecondByte = Analog_Value[Register - 0xB1] & 0xFF;
+                        }
+                        else {
+                            SSP2BUF = 0;
+                            SecondByte = 0;
+                        }
+                        break;
+
                     case 0xB8:
                     case 0xB9:
                     case 0xBA:
@@ -573,9 +585,16 @@ void InterruptHandlerLow(void)
                     case 0xBC:
                     case 0xBD:
                     case 0xBE:
-                        // Send analog values (2-bytes)
-                        SSP2BUF = Analog_Value[Register - 0xB1] >> 8;
-                        SecondByte = Analog_Value[Register - 0xB1] & 0xFF;
+                        // Send analog values (2-bytes), but only if the
+                        // corresponding bit in 0xA4 is clear.
+                        if (~Analog_Enable[1] & (0x01 << (Register - 0xB8)) ) {
+                            SSP2BUF = Analog_Value[Register - 0xB1] >> 8;
+                            SecondByte = Analog_Value[Register - 0xB1] & 0xFF;
+                        }
+                        else {
+                            SSP2BUF = 0;
+                            SecondByte = 0;
+                        }
                         break;
 
                         // Send motor driver speed values

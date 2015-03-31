@@ -1,6 +1,6 @@
                        RCMx1 Commands
                        
-        For RCMx1 firmware version 0x08 - 03/04/2015
+        For RCMx1 firmware version 0x0C - 03/30/2015
     Written by Brian Schmalz of Logic PD for Tim Jump of Engineering^3.
 
     Copyright 2015 Engineering^3 Copyright and related rights are licensed 
@@ -261,7 +261,7 @@ Analog inputs (RP9 to RP22)
     0xA4: Analog Input Enable bits                          2 bytes, read/write
         Any bits set to 0 in this 14-bit register indicate that the corresponding 
         analog pin is in analog mode and can not be used for digital output. 
-        Any bits that set to 1 indicate that the analog pin is in digital 
+        Any bits that set to 1 indicate that the pin is in digital (GPIO)
         input/output mode, and thus can not be used for reading analog values.
         0 = Analog Input, 1 = GPIO
         Contains 0x0000 (all analog inputs) on boot.
@@ -271,7 +271,9 @@ Analog inputs (RP9 to RP22)
     
     0xB1 through 0xBE: Sensor Values                  2 bytes, read only
         0xB1 corresponds to PN9, 0xB2 to PN10, etc.
-        Read 12-bit analog value on analog input pins. 
+        Read 12-bit analog value on analog input pins when pin is configured
+        for analog input (i.e. the pin's bit in register 0xA4 is 0).
+        The value in this register will be zero if the pin is set to GPIO mode.
         0V = 0 counts
         5V = 4095 counts
 
