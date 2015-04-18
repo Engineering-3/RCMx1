@@ -104,7 +104,7 @@ void TimerInit(void)
         RCServo_MaxReverse[i] = RCServo_Scale(0x01, i);
         RCServo_MaxAccel[i] = RCServo_AccelScale(0xFF);
         RCServo_MaxDecel[i] = RCServo_AccelScale(0xFF);
-        RCServo_SafetyTimeout[i] = 0;
+        RCServo_SafetyTimeout[i] = DEFAULT_SAFETY_TIMEOUT_S;
         RCServo_Width[i] = RCServo_Scale(0x80, i);
         RCServo_FilterLastCommandTime[i] = 0;
         RCServo_SlowMove[i] = 0x00;
@@ -171,19 +171,16 @@ UINT8 RCServo_Unscale(UINT16 OrigRCServo_Width, UINT8 Channel)
             RCServo_MinWidth[Channel]
         )
     );
-//	PWMMinWidth[Channel] = 58980;
-//	PWMMaxWidth[Channel] = 117960;
-//	OrigPWMWidth = 88470;
-//	return (((OrigPWMWidth - PWMMinWidth[Channel]) * 0x100)/(PWMMaxWidth[Channel] - PWMMinWidth[Channel]));
-//	return(0);
 }
 
 UINT16 RCServo_AccelScale(UINT8 InputVal)
 {
-    return (InputVal << 4);
+//    return (InputVal << 4);
+    return (InputVal);
 }
 
 UINT8 RCServo_AccelUnScale(UINT16 InputVal)
 {
-    return (InputVal >> 4);
+//    return (InputVal >> 4);
+    return (InputVal);
 }

@@ -532,12 +532,12 @@ void RCServoSetFilterEnables(UINT8 DataByte)
         if (DataByte & (1 << i))
         {
             // A 1 in the bit's position means the filter is turned on
-            RCServo_FilterEnabled[i] = RC_SERVO_FILTER_OFF;
+            RCServo_FilterEnabled[i] = RC_SERVO_FILTER_ON;
         }
         else
         {
             // A 0 means the filter is turned off
-            RCServo_FilterEnabled[i] = RC_SERVO_FILTER_ON;
+            RCServo_FilterEnabled[i] = RC_SERVO_FILTER_OFF;
         }
     }
 }

@@ -1,6 +1,6 @@
                        RCMx1 Commands
                        
-        For RCMx1 firmware version 0x0C - 03/30/2015
+        For RCMx1 firmware version 0x0D - 04/18/2015
     Written by Brian Schmalz of Logic PD for Tim Jump of Engineering^3.
 
     Copyright 2015 Engineering^3 Copyright and related rights are licensed 
@@ -143,12 +143,12 @@ RC Servo Control (PN1 to PN8)
         Read/Write: Byte1: RC servo enable bits 1-8
         
     0x25: RC Servo filter enable bits                        1 byte, read/write
-    (THIS FEATURE NOT CURRENTLY IMPLEMENTED)
         Any bits set (1) in this 8-bit register indicate that the corresponding RC 
         Servo channel's filter is turned on. This filter uses the Max Forward 
         Speed, Max Reverse Speed, Max Acceleration, Max Deceleration, and 
         Safety Timeout values (See below). Without the filter turned on, the 
         RC servo positions are directly written to the servo channels.
+        Register contains 0x00 on boot (all filters off).
         
         Read/Write: Byte1: RC servo filter enable bits 1-8
         
@@ -162,7 +162,6 @@ RC Servo Control (PN1 to PN8)
         on for that pin.
     
     0x41 through 0x48: RC Servo max forward speed            1 byte, read/write
-    (THIS FEATURE NOT CURRENTLY IMPLEMENTED)
         Valid values are from 0x80 to 0xFF, and correspond to maximum (highest)
         RC servo position allowed for the channel.
         Contains 0xFF on boot.
@@ -170,7 +169,6 @@ RC Servo Control (PN1 to PN8)
         Read/Write Byte1: max forward speed 
              
     0x51 through 0x58: RC Servo max reverse speed            1 byte, read/write
-    (THIS FEATURE NOT CURRENTLY IMPLEMENTED)
         Valid values are from 0x01 to 0x80, and correspond to the minimum
         (lowest) RC servo position allowed for the channel.
         Contains 0x01 on boot.
@@ -178,10 +176,13 @@ RC Servo Control (PN1 to PN8)
         Read/Write: Byte1: max reverse speed
     
     0x61 through 0x68: RC Servo max acceleration             1 byte, read/write
-    (THIS FEATURE NOT CURRENTLY IMPLEMENTED)
         Controls how fast each actual RC servo output value (position) is
         allowed to change when a new position is send to the RCMx1 for a given
-        RC servo channel. The units are servo position counts per 24ms.
+        RC servo channel. The units of this value 0.0000005s, and represent the
+        amount of time that the RC servo pulse will change per 24ms. So if this
+        register contains 0x01, and the current RC servo pulse is 2ms (0xFF), 
+        and you want to go to 1ms RC servo pulse width (0x01), it will take
+        about 47 seconds to go from 2ms pulse width to 1ms pulse width.
         Applies when the new target position is greater than the current
         position.
         Valid values from 0x01 to 0xFF.
@@ -190,23 +191,26 @@ RC Servo Control (PN1 to PN8)
         Read/Write: Byte1: max acceleration
             
     0x71 through 0x78: RC Servo max deceleration             1 byte, read/write
-    (THIS FEATURE NOT CURRENTLY IMPLEMENTED)
         Controls how fast each actual RC servo output value (position) is
         allowed to change when a new position is send to the RCMx1 for a given
-        RC servo channel. The units are servo position counts per 24ms.
+        RC servo channel. The units of this value 0.0000005s, and represent the
+        amount of time that the RC servo pulse will change per 24ms. So if this
+        register contains 0x01, and the current RC servo pulse is 2ms (0xFF), 
+        and you want to go to 1ms RC servo pulse width (0x01), it will take
+        about 47 seconds to go from 2ms pulse width to 1ms pulse width.
         Applies when the new target position is less than the current position.
         Valid values from 0x01 to 0xFF.
         Contains 0xFF on boot.
         
         Read/Write: Byte1: max deceleration
      
-    0x81 through 0x88: RC Servo safety time-out in seconds    1 byte, read/write            TEST 
-    (THIS FEATURE NOT CURRENTLY IMPLEMENTED)
+    0x81 through 0x88: RC Servo safety time-out in seconds    1 byte, read/write
         If the time between writes or reads to the Safety Timeout Reset exceed
         this value (on a per servo basis) in seconds then that servo will be 
         turned off (no pulses). Each servo can have it's own safety timeout value.
         Valid values are 0x00 (to disable) and 0x01 to 0xFF in seconds.
-        Contains 0x02 on boot
+        This time out is only used if the RC Servo channel's filter is turned on.
+        Contains 0x02 on boot.
         
         Read/Write: Byte1: safety time-out in seconds
     

@@ -82,7 +82,7 @@ void InterruptVectorLow(void)
 
 void InterruptHandlerHigh(void)
 {
-    UINT16 ErrorSig = 0;
+    INT16 ErrorSig = 0;
     UINT8 i;
     UINT16 NextTime = 0;
     UINT16 CurrentTime = 0;
@@ -145,14 +145,18 @@ void InterruptHandlerHigh(void)
             while (RCServo_CurrentChannel < RC_SERVO_COUNT)
             {
                 // Check for a safety timeout
-                if (RCServo_FilterEnabled[RCServo_CurrentChannel])
+                if (RCServo_FilterEnabled[RCServo_CurrentChannel] == RC_SERVO_FILTER_ON)
                 {
-                    if (RCServo_FilterLastCommandTime[RCServo_CurrentChannel] > RCServo_SafetyTimeout[RCServo_CurrentChannel])
+                    if (
+                        (RCServo_FilterLastCommandTime[RCServo_CurrentChannel] > RCServo_SafetyTimeout[RCServo_CurrentChannel])
+                        &&
+                        (RCServo_SafetyTimeout[RCServo_CurrentChannel] != 0x00)
+                    )
                     {
                         // Turn the channel off
                         RCServo_Enable[RCServo_CurrentChannel] = RC_SERVO_ENABLE_OFF;
 
-                        // Also clear out the current PWM and target PWM values
+                        // Also clear out the current PWM and target PWM values so that they're centered when we turned this channel on again
                         RCServo_TargetWidth[RCServo_CurrentChannel] = RCServo_Scale(0x80, RCServo_CurrentChannel);
                         RCServo_Width[RCServo_CurrentChannel] = RCServo_Scale(0x80, RCServo_CurrentChannel);
                     }
@@ -191,9 +195,11 @@ void InterruptHandlerHigh(void)
                             RCServo_TargetWidth[RCServo_CurrentChannel] = RCServo_MaxWidth[RCServo_CurrentChannel];
                         }
                     }
+
                     // Update RCServo_Width based on RCServo_TargetWidth
-                    if (RCServo_FilterEnabled[RCServo_CurrentChannel])
+                    if (RCServo_FilterEnabled[RCServo_CurrentChannel] == RC_SERVO_FILTER_ON)
                     {
+                        // Compute error signal - difference from target and actual
                         // Will be positive if we are trying to go more forward, neg if we're trying to reverse
                         ErrorSig = RCServo_TargetWidth[RCServo_CurrentChannel] - RCServo_Width[RCServo_CurrentChannel];
 
@@ -203,11 +209,11 @@ void InterruptHandlerHigh(void)
                         {
                             ErrorSig = RCServo_MaxAccel[RCServo_CurrentChannel];
                         }
-                        /// TODO: Fix when we have more time
-                        //                        if (ErrorSig < -RCServo_MaxDecel[RCServo_CurrentChannel])
-                        //                        {
-                        //                            ErrorSig = -RCServo_MaxDecel[RCServo_CurrentChannel];
-                        //                        }
+                        if (ErrorSig < -((INT16)RCServo_MaxDecel[RCServo_CurrentChannel]))
+                        {
+                            ErrorSig = -((INT16)RCServo_MaxDecel[RCServo_CurrentChannel]);
+                        }
+
                         // Move a little bit towards our target width
                         RCServo_Width[RCServo_CurrentChannel] += ErrorSig;
 
@@ -418,21 +424,21 @@ void InterruptHandlerLow(void)
                     case 0x25:
                         // Execute the read of the RCServo filter enable bits
                         SSP2BUF =
-                            RCServo_FilterEnabled[0]
+                            ((RCServo_FilterEnabled[0] == RC_SERVO_FILTER_ON)?1:0)
                             |
-                            RCServo_FilterEnabled[1] << 1
+                            (((RCServo_FilterEnabled[1] << 1) == RC_SERVO_FILTER_ON)?1:0)
                             |
-                            RCServo_FilterEnabled[2] << 2
+                            (((RCServo_FilterEnabled[2] << 2) == RC_SERVO_FILTER_ON)?1:0)
                             |
-                            RCServo_FilterEnabled[3] << 3
+                            (((RCServo_FilterEnabled[3] << 3) == RC_SERVO_FILTER_ON)?1:0)
                             |
-                            RCServo_FilterEnabled[4] << 4
+                            (((RCServo_FilterEnabled[4] << 4) == RC_SERVO_FILTER_ON)?1:0)
                             |
-                            RCServo_FilterEnabled[5] << 5
+                            (((RCServo_FilterEnabled[5] << 5) == RC_SERVO_FILTER_ON)?1:0)
                             |
-                            RCServo_FilterEnabled[6] << 6
+                            (((RCServo_FilterEnabled[6] << 6) == RC_SERVO_FILTER_ON)?1:0)
                             |
-                            RCServo_FilterEnabled[7] << 7;
+                            (((RCServo_FilterEnabled[7] << 7) == RC_SERVO_FILTER_ON)?1:0);
                         break;
 
                         // RCServo read position bytes, 1 byte
@@ -721,8 +727,7 @@ void InterruptHandlerLow(void)
 
                             // RC Servo filter enable bits write, 1 byte
                         case 0x25:
-                            // For now, do nothing
-                            //RCServoSetFilterEnables(Data[1]);
+                            RCServoSetFilterEnables(Data[1]);
                             break;
 
                             // RC Servo motor position value write, 1 byte
@@ -782,6 +787,10 @@ void InterruptHandlerLow(void)
                         case 0x66:
                         case 0x67:
                         case 0x68:
+                            // 0x00 is not an allowed value here.
+                            if (Data[1] == 0x00) {
+                                Data[1] = 0x1;
+                            }
                             RCServo_MaxAccel[Register - 0x61] = RCServo_AccelScale(Data[1]);
                             break;
 
@@ -794,6 +803,10 @@ void InterruptHandlerLow(void)
                         case 0x76:
                         case 0x77:
                         case 0x78:
+                            // 0x00 is not an allowed value here.
+                            if (Data[1] == 0x00) {
+                                Data[1] = 0x1;
+                            }
                             RCServo_MaxDecel[Register - 0x71] = RCServo_AccelScale(Data[1]);
                             break;
 
