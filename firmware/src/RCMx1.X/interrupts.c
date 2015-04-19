@@ -144,24 +144,6 @@ void InterruptHandlerHigh(void)
             // We need to find the next PWM channel that's enabled
             while (RCServo_CurrentChannel < RC_SERVO_COUNT)
             {
-                // Check for a safety timeout
-                if (RCServo_FilterEnabled[RCServo_CurrentChannel] == RC_SERVO_FILTER_ON)
-                {
-                    if (
-                        (RCServo_FilterLastCommandTime[RCServo_CurrentChannel] > RCServo_SafetyTimeout[RCServo_CurrentChannel])
-                        &&
-                        (RCServo_SafetyTimeout[RCServo_CurrentChannel] != 0x00)
-                    )
-                    {
-                        // Turn the channel off
-                        RCServo_Enable[RCServo_CurrentChannel] = RC_SERVO_ENABLE_OFF;
-
-                        // Also clear out the current PWM and target PWM values so that they're centered when we turned this channel on again
-                        RCServo_TargetWidth[RCServo_CurrentChannel] = RCServo_Scale(0x80, RCServo_CurrentChannel);
-                        RCServo_Width[RCServo_CurrentChannel] = RCServo_Scale(0x80, RCServo_CurrentChannel);
-                    }
-                }
-
                 if (RCServo_Enable[RCServo_CurrentChannel] == RC_SERVO_ENABLE_ON)
                 {
                     // If slow move is enabled, take care of moveing the target
@@ -343,6 +325,10 @@ void InterruptHandlerLow(void)
                 }
                 else
                 {
+                    // Reset the safety command timeout
+                    OneSecondCounter = 0;
+                    LastCommandTime = 0;
+
                     SecondByte = 0;
                     // If this is the master reading from us, send it the first byte of the
                     // data.
@@ -350,6 +336,16 @@ void InterruptHandlerLow(void)
                     {
                         // Version number, 1 byte
                     case 0x00:
+                        SSP2BUF = RCMX1_FIMRWARE_VERSION;
+                        break;
+
+                        // Safety Timeout Value
+                    case 0x0E:
+                        SSP2BUF = SafetyTimeoutValue;
+                        break;
+
+                        // Safety Timeout Reset
+                    case 0x0F:
                         SSP2BUF = RCMX1_FIMRWARE_VERSION;
                         break;
 
@@ -506,19 +502,6 @@ void InterruptHandlerLow(void)
                         SSP2BUF = RCServo_AccelUnScale(RCServo_MaxDecel[Register - 0x71]);
                         break;
 
-                        // Send the RC Servo saftey timeout bytes
-                    case 0x81:
-                    case 0x82:
-                    case 0x83:
-                    case 0x84:
-                    case 0x85:
-                    case 0x86:
-                    case 0x87:
-                    case 0x88:
-                        // Send the RC Servo saftey timeout bytes
-                        SSP2BUF = RCServo_SafetyTimeout[Register - 0x81];
-                        break;
-
                         // Send the RC Servo slow move bytes
                     case 0x91:
                     case 0x92:
@@ -612,14 +595,6 @@ void InterruptHandlerLow(void)
                         SSP2BUF = Motor_Value[Register - 0xD1];
                         break;
 
-                    case 0xD5:
-                    case 0xD6:
-                    case 0xD7:
-                    case 0xD8:
-                        // Send Motor saftey timeout values (1-byte)
-                        SSP2BUF = Motor_Safety_Timeout[Register - 0xD5];
-                        break;
-
                         // Values to send if an unknown register address is used
                     default:
                         SSP2BUF = 0xFF;
@@ -636,6 +611,10 @@ void InterruptHandlerLow(void)
                 // Is master writing to us?
                 if (SSP2STATbits.R_W == 0)
                 {
+                    // Reset the safety command timeout
+                    OneSecondCounter = 0;
+                    LastCommandTime = 0;
+
                     if (DataPointer == 0)
                     {
                         // If this is the first byte of data that the master sent us, then
@@ -665,6 +644,10 @@ void InterruptHandlerLow(void)
                     {
                         switch (Register)
                         {
+                            // Safety Timeout Value write, 1 byte
+                        case 0x0E:
+                            SafetyTimeoutValue = Data[1];
+                            break;
 
                             // GPIO write data, 1 byte
                         case 0x10:
@@ -750,8 +733,6 @@ void InterruptHandlerLow(void)
                                 RCServo_Enable[Register - 0x31] = RC_SERVO_ENABLE_ON;
                             }
                             RCServo_TargetWidth[Register - 0x31] = RCServo_Scale(Data[1], Register - 0x31);
-                            // Record that we had a command at this time
-                            RCServo_FilterLastCommandTime[Register - 0x31] = 0;
                             break;
 
                             // RC Servo max forward speed value write, 1 byte
@@ -810,18 +791,6 @@ void InterruptHandlerLow(void)
                             RCServo_MaxDecel[Register - 0x71] = RCServo_AccelScale(Data[1]);
                             break;
 
-                            // RC Servo saftey timeout value write, 1 byte
-                        case 0x81:
-                        case 0x82:
-                        case 0x83:
-                        case 0x84:
-                        case 0x85:
-                        case 0x86:
-                        case 0x87:
-                        case 0x88:
-                            RCServo_SafetyTimeout[Register - 0x81] = Data[1];
-                            break;
-
                             // RC Servo slow move value write, 1 byte
                         case 0x91:
                         case 0x92:
@@ -843,15 +812,6 @@ void InterruptHandlerLow(void)
                             // Now update the motor's PWM hardware
                             PWMUpdateValue(Register - 0xD1, Data[1]);
                             break;
-
-                            // Motor Safety Timeout registers, 1 byte
-                        case 0xD5:
-                        case 0xD6:
-                        case 0xD7:
-                        case 0xD8:
-                            Motor_Safety_Timeout[Register - 0xD5] = Data[1];
-                            break;
-
 
                             // Do nothing for unknown registers
                         default:
@@ -920,7 +880,8 @@ void InterruptHandlerLow(void)
         }
         PIR2bits.SSP2IF = 0; /* Clear Interrupt Flag 1 */
     }
-        // The Timer4 interrupt fires every 1ms
+
+    // The Timer4 interrupt fires every 1ms
     else if (PIR5bits.TMR4IF)
     {
         UINT8 i;
@@ -961,9 +922,34 @@ void InterruptHandlerLow(void)
         if (OneSecondCounter == ONE_SECOND_IN_MS)
         {
             OneSecondCounter = 0;
-            for (i = 0; i < RC_SERVO_COUNT; i++)
+            if (LastCommandTime < 254)
             {
-                RCServo_FilterLastCommandTime[i]++;
+                LastCommandTime++;
+            }
+
+            // Check for a safety timeout
+            if (SafetyTimeoutValue != 0x00)
+            {
+                if (LastCommandTime > SafetyTimeoutValue)
+                {
+                    // Turn off all RC servo outputs
+                    for (i=0; i < RC_SERVO_COUNT; i++)
+                    {
+                        RCServo_Enable[i] = RC_SERVO_ENABLE_OFF;
+
+                        // Also clear out the current PWM and target PWM values so that they're centered when we turned this channel on again
+                        RCServo_TargetWidth[i] = RCServo_Scale(0x80, i);
+                        RCServo_Width[i] = RCServo_Scale(0x80, i);
+                    }
+
+                    // Turn off all DC motor outputs
+                    for (i=0; i < 4; i++)
+                    {
+                        Motor_Value[i] = 0x00;
+                        // Now update the motor's PWM hardware
+                        PWMUpdateValue(i, 0x00);
+                    }
+                }
             }
         }
     }

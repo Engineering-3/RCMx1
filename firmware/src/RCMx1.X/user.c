@@ -44,6 +44,10 @@
 /******************************************************************************/
 /* Global variable storage                                                    */
 /******************************************************************************/
+
+// Safety Timeout Value reigster
+UINT8 SafetyTimeoutValue = 0;
+
 // GPIO pins 1-6
 UINT8 GPIO_IO = 0;
 UINT8 GPIO_Dir = 0;
@@ -63,15 +67,12 @@ UINT16 RCServo_MaxForward[RC_SERVO_COUNT] = {0};
 UINT16 RCServo_MaxReverse[RC_SERVO_COUNT] = {0};
 UINT8 RCServo_MaxAccel[RC_SERVO_COUNT] = {0};
 UINT8 RCServo_MaxDecel[RC_SERVO_COUNT] = {0};
-UINT8 RCServo_SafetyTimeout[RC_SERVO_COUNT] = {2};
 UINT8 RCServo_SlowMove[RC_SERVO_COUNT] = {0};
 
 // Current channel number (0 through 7) that RC servo output is on
 UINT8 RCServo_CurrentChannel = {0};
-//
+// Used to record, internally, if we are currently outputting a high on any RC servo pin or not
 UINT8 RCServo_SignalOn = 0;
-// Seconds since last command from SRV for each servo
-UINT8 RCServo_FilterLastCommandTime[RC_SERVO_COUNT] = {0};
 // TRUE if the 'filter' functions are enabled on this RC Servo channel
 UINT8 RCServo_FilterEnabled[RC_SERVO_COUNT] = {0};
 
@@ -86,9 +87,10 @@ UINT16 Analog_Value[16] = {0};
 // Motor outputs 1-4
 UINT8 Motor_Value[4] = {0};
 
-// Motor Saftey Timeout values 1-4
-UINT8 Motor_Safety_Timeout[4] = {2};
+// Time, in seconds, since the last read/write over I2C to this system
+UINT8 LastCommandTime = 0;
 
+// Timer used to blink the LED by the programming connector
 volatile UINT16 TimerHeartbeat = 0;
 
 /******************************************************************************/

@@ -1,6 +1,6 @@
                        RCMx1 Commands
                        
-        For RCMx1 firmware version 0x0D - 04/18/2015
+        For RCMx1 firmware version 0x0E - 04/19/2015
     Written by Brian Schmalz of Logic PD for Tim Jump of Engineering^3.
 
     Copyright 2015 Engineering^3 Copyright and related rights are licensed 
@@ -63,14 +63,28 @@ Misc Control
 
     0x00: Software Revision Value                            1 byte, read only
 
+    0x0E: Safety Timeout Value                               1 byte, read/write
+        This is the number of seconds after the last read or write to any register
+        that the RC Servo and DC motor outputs will be shut off. Use a value of
+        0x00 here to disable the Safety Timeout feature. Values of 0x01 through
+        0xFF represent the maximum number of seconds that can elapse between I2C 
+        accesses to any register on the RCMx1 board before the safety timeout
+        feature kicks in and shuts off all RC servo outputs (sets them to 0x00,
+        no pulses) and turns off the Motor Driver outputs (sets them to 0x00).
+        
+        And read or write to any I2C register on the board will trigger a reset
+        of the safety timeout feature. However, it is convenient to use register
+        0x0F for this since it doesn't actually do anything.
+        
+        This register defaults to 0x00 on bootup. (disabled)
+    
     0x0F: Safety Timeout Reset                               1 byte, read/write
         A read from this register returns the current software version value.
-        A write to this register doesn't actually write anything.
-        You must read or write to this register often enough to prevent the 
-        RCServo and Motor safety timeouts from tripping. Every second, the 
-        safety timeouts increment. If they ever reach the values set in
-        RC Servo Safety Timeout and/or Motor Safety Timeout values, then
-        those servos or motors will shut down.
+        A write to this register doesn't actually change anything.
+        You must read or write from any register often enough to prevent the 
+        safety timeout from tripping (see register 0x0E). Every second, the 
+        internal safety timeout increments. If it ever reaches the values set in
+        the Safety Timeout Value register, then the servos and motors will shut down.
     
 GPIO control (PN23 to PN28)
 
@@ -436,17 +450,7 @@ Motor Driver Outputs
         Contains 0x00 on boot
         
         Read/Write: Byte1: Motor Drive Control command value
-
-    0xD5 through 0xD8: Motor safety time-out in seconds      1 byte, read/write    TEST
-    (THIS FEATURE NOT CURRENTLY IMPLEMENTED)
-        If the time between writes or reads to the Safety Timeout Reset exceed
-        this value (on a per motor basis) in seconds then that motor will be 
-        shut off. Each motor has it's own safety timeout value.
-        Valid values are 0x00 (to disable) and 0x01 to 0xFF in seconds.
-        Contains 0x02 on boot
-        
-        Read/Write: Byte1: safety time-out in seconds
-        
+                
         
         
         

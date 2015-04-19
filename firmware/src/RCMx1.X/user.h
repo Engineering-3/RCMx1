@@ -36,6 +36,9 @@
 /******************************************************************************/
 /* Externs for public variables                                               */
 /******************************************************************************/
+
+extern UINT8 SafetyTimeoutValue;
+
 // GPIO pins 1-16
 extern UINT8 GPIO_IO;
 extern UINT8 GPIO_Dir;
@@ -55,11 +58,9 @@ extern UINT16 RCServo_MaxForward[RC_SERVO_COUNT];
 extern UINT16 RCServo_MaxReverse[RC_SERVO_COUNT];
 extern UINT8 RCServo_MaxAccel[RC_SERVO_COUNT];
 extern UINT8 RCServo_MaxDecel[RC_SERVO_COUNT];
-extern UINT8 RCServo_SafetyTimeout[RC_SERVO_COUNT];
 extern UINT8 RCServo_SlowMove[RC_SERVO_COUNT];
 extern UINT8 RCServo_CurrentChannel;
 extern UINT8 RCServo_SignalOn;
-extern UINT8 RCServo_FilterLastCommandTime[RC_SERVO_COUNT];
 extern UINT8 RCServo_FilterEnabled[RC_SERVO_COUNT];
 
 // Anaog pins 1-16
@@ -72,7 +73,8 @@ extern UINT16 Analog_Value[16];
 
 // Motor outputs 1-4
 extern UINT8 Motor_Value[4];
-extern UINT8 Motor_Safety_Timeout[4];
+
+extern UINT8 LastCommandTime;
 
 // Countdown timer for heartbeat LED
 extern volatile UINT16 TimerHeartbeat;

@@ -104,14 +104,17 @@ void TimerInit(void)
         RCServo_MaxReverse[i] = RCServo_Scale(0x01, i);
         RCServo_MaxAccel[i] = RCServo_AccelScale(0xFF);
         RCServo_MaxDecel[i] = RCServo_AccelScale(0xFF);
-        RCServo_SafetyTimeout[i] = DEFAULT_SAFETY_TIMEOUT_S;
         RCServo_Width[i] = RCServo_Scale(0x80, i);
-        RCServo_FilterLastCommandTime[i] = 0;
         RCServo_SlowMove[i] = 0x00;
         RCServo_FilterEnabled[i] = FALSE;
     }
     RCServo_CurrentChannel = 0;
     RCServo_SignalOn = FALSE;
+
+    // Initialize all of the DC motor variables
+    for (i=0; i < 4; i++) {
+        Motor_Value[i] = 0x00;
+    }
 }
 
 // Take a 0x00 to 0xFF position from the SRV and convert it to a RCServo_Width[] value

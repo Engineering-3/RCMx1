@@ -50,7 +50,7 @@
 #define RCMX1_I2C_ADDRESS           0x38
 
 // Our firmware version number (1 byte)
-#define RCMX1_FIMRWARE_VERSION      0x0D
+#define RCMX1_FIMRWARE_VERSION      0x0E
 
 #define RCMx1_PORTB_MASK            0b00111111
 #define RCMx1_PORTB_RBPU_MASK       0b00000001
@@ -84,9 +84,8 @@
 #define ANALOG_ENABLE               1
 #define ANALOG_DISABLE              0
 
-// Default (boot up) value in the Safety Timeout Registers (in seconds)
-#define DEFAULT_SAFETY_TIMEOUT_S    2
-
+// Default (boot up) value in the Safety Timeout Register (in seconds)
+#define DEFAULT_SAFETY_TIMEOUT_S    0
 
 // For debug output bits
 #define DEBUG1                      LATCbits.LATC6
