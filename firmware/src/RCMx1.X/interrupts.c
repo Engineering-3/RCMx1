@@ -731,8 +731,9 @@ void InterruptHandlerLow(void)
                             else
                             {
                                 RCServo_Enable[Register - 0x31] = RC_SERVO_ENABLE_ON;
+                                RCServo_TargetWidth[Register - 0x31] = RCServo_Scale(Data[1], Register - 0x31);
+                                RCServoGPIOWriteDirection(RCServo_Dir);
                             }
-                            RCServo_TargetWidth[Register - 0x31] = RCServo_Scale(Data[1], Register - 0x31);
                             break;
 
                             // RC Servo max forward speed value write, 1 byte
