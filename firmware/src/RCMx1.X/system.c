@@ -1026,7 +1026,7 @@ void  AnalogWriteEnable(UINT8 Low, UINT8 High)
     }
     else
     {
-        ANALOG2_ENABLE = 1;
+        ANALOG2_ENABLE = ANALOG_DISABLE;
     }
     if (((Low & 0x04) >> 2) == ANALOG_ENABLE_REGISTER_BIT_ENABLE)
     {

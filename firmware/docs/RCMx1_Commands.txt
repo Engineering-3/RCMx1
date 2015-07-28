@@ -1,6 +1,6 @@
                        RCMx1 Commands
                        
-        For RCMx1 firmware version 0x0F - 05/09/2015
+        For RCMx1 firmware version 0x10 - 07/27/2015
     Written by Brian Schmalz of Logic PD for Tim Jump of Engineering^3.
 
     Copyright 2015 Engineering^3 Copyright and related rights are licensed 
@@ -217,17 +217,7 @@ RC Servo Control (PN1 to PN8)
         Contains 0xFF on boot.
         
         Read/Write: Byte1: max deceleration
-     
-    0x81 through 0x88: RC Servo safety time-out in seconds    1 byte, read/write
-        If the time between writes or reads to the Safety Timeout Reset exceed
-        this value (on a per servo basis) in seconds then that servo will be 
-        turned off (no pulses). Each servo can have it's own safety timeout value.
-        Valid values are 0x00 (to disable) and 0x01 to 0xFF in seconds.
-        This time out is only used if the RC Servo channel's filter is turned on.
-        Contains 0x02 on boot.
-        
-        Read/Write: Byte1: safety time-out in seconds
-    
+         
     0x91 through 0x98: RC Servo Slow Move Control            1 byte, read/write
         These eight registers control the 'slow move' feature. They are 
         intended to use a normal RC servo and treat it like a continuous 
@@ -244,13 +234,16 @@ Analog inputs (RP9 to RP22)
 
     Analog Input pin digital IO Control
     0xA0: Analog Input GPIO value                           2 bytes, read/write
-        
+        Note: Before using this register to read the Analog Input pins as digital
+        GPIO (inputs or outputs) make sure to set the corresponding bits to "1" in
+        the Analog Input Enable register.
+    
         Read: Byte1: Analog Input GPIO value bits for PN9 to PN15.
-            Reads Analog Input as GPIO no matter what direction the pins are 
-            set to.
+            Reads Analog Input as digital inputs, for all bits in Analog Input
+            Enable register that are 1
         Read: Byte2: Analog Input GPIO value bits for PN16 to PN22.
-            Reads Analog Input as GPIO no matter what direction the pins are 
-            set to.
+            Reads Analog Input as digital inputs, for all bits in Analog Input
+            Enable register that are 1
         Write: Byte1: Analog Input as GPIO value output for PN9 to PN15.
             Pins must be set as outputs and pin set for GPIO for value to appear on pin.
         Write: Byte2: Analog Input as GPIO value output for PN16 to PN22
@@ -450,7 +443,3 @@ Motor Driver Outputs
         Contains 0x00 on boot
         
         Read/Write: Byte1: Motor Drive Control command value
-                
-        
-        
-        

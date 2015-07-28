@@ -257,7 +257,7 @@ void InterruptHandlerHigh(void)
                 }
                 RCServo_CurrentChannel++;
             }
-            // If there are no more emabled channels,
+            // If there are no more enabled channels,
             // then set the next fire to happen at the beginning of the next frame
             if (RCServo_SignalOn == FALSE)
             {
