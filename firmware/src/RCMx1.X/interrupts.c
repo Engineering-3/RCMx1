@@ -341,7 +341,7 @@ void InterruptHandlerLow(void)
 
                         // Safety Timeout Value
                     case 0x0E:
-                        SSP2BUF = SafetyTimeoutValue;
+                        SSP2BUF = (UINT8)(SafetyTimeoutValue/1000);
                         break;
 
                         // Safety Timeout Reset
@@ -646,7 +646,7 @@ void InterruptHandlerLow(void)
                         {
                             // Safety Timeout Value write, 1 byte
                         case 0x0E:
-                            SafetyTimeoutValue = Data[1];
+                            SafetyTimeoutValue = Data[1]*1000;
                             break;
 
                             // GPIO write data, 1 byte
@@ -918,7 +918,7 @@ void InterruptHandlerLow(void)
         {
             TimerHeartbeat--;
         }
-        // Every second, incriment the last command times
+        // Every second, increment the last command times
         OneSecondCounter++;
         if (OneSecondCounter == ONE_SECOND_IN_MS)
         {
@@ -929,16 +929,13 @@ void InterruptHandlerLow(void)
             }
 
             // Check for a safety timeout
-            if (SafetyTimeoutValue != 0x00)
+            if (SafetyTimeoutValue != 0x0000)
             {
-                if (LastCommandTime > SafetyTimeoutValue)
+                if (LastCommandTime > (SafetyTimeoutValue/1000))
                 {
-                    // Turn off all RC servo outputs
+                    // Center all RC servo outputs to "0x80"
                     for (i=0; i < RC_SERVO_COUNT; i++)
                     {
-                        RCServo_Enable[i] = RC_SERVO_ENABLE_OFF;
-
-                        // Also clear out the current PWM and target PWM values so that they're centered when we turned this channel on again
                         RCServo_TargetWidth[i] = RCServo_Scale(0x80, i);
                         RCServo_Width[i] = RCServo_Scale(0x80, i);
                     }

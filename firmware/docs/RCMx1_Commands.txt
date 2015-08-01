@@ -1,6 +1,6 @@
                        RCMx1 Commands
                        
-        For RCMx1 firmware version 0x10 - 07/27/2015
+        For RCMx1 firmware version 0x11s - 08/01/2015
     Written by Brian Schmalz of Logic PD for Tim Jump of Engineering^3.
 
     Copyright 2015 Engineering^3 Copyright and related rights are licensed 
@@ -65,12 +65,12 @@ Misc Control
 
     0x0E: Safety Timeout Value                               1 byte, read/write
         This is the number of seconds after the last read or write to any register
-        that the RC Servo and DC motor outputs will be shut off. Use a value of
-        0x00 here to disable the Safety Timeout feature. Values of 0x01 through
-        0xFF represent the maximum number of seconds that can elapse between I2C 
-        accesses to any register on the RCMx1 board before the safety timeout
-        feature kicks in and shuts off all RC servo outputs (sets them to 0x00,
-        no pulses) and turns off the Motor Driver outputs (sets them to 0x00).
+        that the RC Servo and DC motor outputs will be put in a 'safe' state. Use 
+        a value of 0x00 here to disable the Safety Timeout feature. Values of 0x01 
+        through 0xFF represent the maximum number of seconds that can elapse between 
+        I2C accesses to any register on the RCMx1 board before the safety timeout
+        feature kicks in 'safeties' all RC servo outputs (sets them to 0x80, i.e. 
+        1.5ms pulses) and turns off the Motor Driver outputs (sets them to 0x00).
         
         And read or write to any I2C register on the board will trigger a reset
         of the safety timeout feature. However, it is convenient to use register
@@ -159,9 +159,9 @@ RC Servo Control (PN1 to PN8)
     0x25: RC Servo filter enable bits                        1 byte, read/write
         Any bits set (1) in this 8-bit register indicate that the corresponding RC 
         Servo channel's filter is turned on. This filter uses the Max Forward 
-        Speed, Max Reverse Speed, Max Acceleration, Max Deceleration, and 
-        Safety Timeout values (See below). Without the filter turned on, the 
-        RC servo positions are directly written to the servo channels.
+        Speed, Max Reverse Speed, Max Acceleration, and Max Deceleration). 
+        Without the filter turned on, the RC servo positions are directly written 
+        to the servo channels.
         Register contains 0x00 on boot (all filters off).
         
         Read/Write: Byte1: RC servo filter enable bits 1-8

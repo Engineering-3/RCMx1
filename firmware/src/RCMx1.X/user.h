@@ -37,7 +37,7 @@
 /* Externs for public variables                                               */
 /******************************************************************************/
 
-extern UINT8 SafetyTimeoutValue;
+extern UINT16 SafetyTimeoutValue;
 
 // GPIO pins 1-16
 extern UINT8 GPIO_IO;

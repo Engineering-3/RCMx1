@@ -45,8 +45,8 @@
 /* Global variable storage                                                    */
 /******************************************************************************/
 
-// Safety Timeout Value reigster
-UINT8 SafetyTimeoutValue = 0;
+// Safety Timeout Value register
+UINT16 SafetyTimeoutValue = 0;
 
 // GPIO pins 1-6
 UINT8 GPIO_IO = 0;
