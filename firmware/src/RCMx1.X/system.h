@@ -50,7 +50,7 @@
 #define RCMX1_I2C_ADDRESS           0x38
 
 // Our firmware version number (1 byte)
-#define RCMX1_FIMRWARE_VERSION      0x11
+#define RCMX1_FIMRWARE_VERSION      0x12
 
 #define RCMx1_PORTB_MASK            0b00111111
 #define RCMx1_PORTB_RBPU_MASK       0b00000001

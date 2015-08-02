@@ -325,10 +325,6 @@ void InterruptHandlerLow(void)
                 }
                 else
                 {
-                    // Reset the safety command timeout
-                    OneSecondCounter = 0;
-                    LastCommandTime = 0;
-
                     SecondByte = 0;
                     // If this is the master reading from us, send it the first byte of the
                     // data.
@@ -346,6 +342,9 @@ void InterruptHandlerLow(void)
 
                         // Safety Timeout Reset
                     case 0x0F:
+                        // Reset the safety command timeout
+                        OneSecondCounter = 0;
+                        LastCommandTime = 0;
                         SSP2BUF = RCMX1_FIMRWARE_VERSION;
                         break;
 
@@ -611,10 +610,6 @@ void InterruptHandlerLow(void)
                 // Is master writing to us?
                 if (SSP2STATbits.R_W == 0)
                 {
-                    // Reset the safety command timeout
-                    OneSecondCounter = 0;
-                    LastCommandTime = 0;
-
                     if (DataPointer == 0)
                     {
                         // If this is the first byte of data that the master sent us, then
@@ -647,6 +642,12 @@ void InterruptHandlerLow(void)
                             // Safety Timeout Value write, 1 byte
                         case 0x0E:
                             SafetyTimeoutValue = Data[1]*1000;
+                            break;
+
+                        case 0x0F:
+                            // Reset the safety command timeout
+                            OneSecondCounter = 0;
+                            LastCommandTime = 0;
                             break;
 
                             // GPIO write data, 1 byte

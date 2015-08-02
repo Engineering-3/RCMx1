@@ -76,7 +76,7 @@ UINT8 RCServo_SignalOn = 0;
 // TRUE if the 'filter' functions are enabled on this RC Servo channel
 UINT8 RCServo_FilterEnabled[RC_SERVO_COUNT] = {0};
 
-// Anaog pins 1-16
+// Analog pins 1-16
 UINT8 Analog_IO[2] = {0};
 UINT8 Analog_Dir[2] = {0};
 UINT8 Analog_PullUp = 0;
