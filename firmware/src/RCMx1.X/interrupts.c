@@ -944,9 +944,9 @@ void InterruptHandlerLow(void)
                     // Turn off all DC motor outputs
                     for (i=0; i < 4; i++)
                     {
-                        Motor_Value[i] = 0x00;
+                        Motor_Value[i] = 0x80;
                         // Now update the motor's PWM hardware
-                        PWMUpdateValue(i, 0x00);
+                        PWMUpdateValue(i, 0x80);
                     }
                 }
             }

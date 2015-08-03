@@ -1,6 +1,6 @@
                        RCMx1 Commands
                        
-        For RCMx1 firmware version 0x12 - 08/02/2015
+        For RCMx1 firmware version 0x13 - 08/02/2015
     Written by Brian Schmalz of Logic PD for Tim Jump of Engineering^3.
 
     Copyright 2015 Engineering^3 Copyright and related rights are licensed 
@@ -70,7 +70,7 @@ Misc Control
         through 0xFF represent the maximum number of seconds that can elapse between 
         I2C accesses to register 0x0F on the RCMx1 board before the safety timeout
         feature kicks in 'safeties' all RC servo outputs (sets them to 0x80, i.e. 
-        1.5ms pulses) and turns off the Motor Driver outputs (sets them to 0x00).
+        1.5ms pulses) and sets all motor driver outputs to 'brake' (i.e. 0x80).
         
         And read or write of register 0x0F will trigger a reset
         of the safety timeout feature. When the Safety Timeout Value register is 
@@ -85,7 +85,8 @@ Misc Control
         You must read or write from this register often enough to prevent the 
         safety timeout from tripping (see register 0x0E). Every second, the 
         internal safety timeout increments. If it ever reaches the values set in
-        the Safety Timeout Value register, then the servos and motors will shut down.
+        the Safety Timeout Value register, then the servos and motors will be set
+        to their 'safety' values. (See register 0x0E above)
     
 GPIO control (PN23 to PN28)
 
@@ -439,7 +440,9 @@ Motor Driver Outputs
         0xD1 corresponds to output A, 0xD2 to B, 0xD3 to C and 0xD4 to D
         0x00 = coast
         0x01 = full reverse
+        0x40 = half reverse
         0x80 = stop/brake
+        0xC0 = half forward
         0xFF = full forward
         Contains 0x00 on boot
         

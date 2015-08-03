@@ -79,7 +79,7 @@ void PWMInit(void)
 }
 
 // Motor channels are from 0 to 3, and indicate which h-bridge to control
-// NewValue is the new speed value. 0x00 = off, 0x80 = break, 0x01 full reverse
+// NewValue is the new speed value. 0x00 = off, 0x80 = brake, 0x01 full reverse
 // 0xFF = full forward.
 void PWMUpdateValue(UINT8 MotorChannel, UINT8 NewValue)
 {
