@@ -1,0 +1,21 @@
+Got version RCMx1_v01 from Tim (who got it from Jim) - 10/29/2014.
+
+Updated to v02 with the following changes: (10/29/2014 - BPS - Schmalz Haus)
+* Changed fiducal marks so they had the copper restrict layer pulling back the copper the full 0.04".
+* Changed R19 from 499K to 499 ohms (error only in DigiKey Part Number field of BOM)
+
+Updated to v03 with the following changes: (02/13/2015 - BPS - Schmalz Haus)
+* Added OSHW logo to schematic and board silk layer (done)
+* Added Solderpad license to schematic (done)
+* Added Copyright to schematic and silk layer (done)
+* Added ROSH symbol to board silk layer (done)
+
+Updated to v04 with the following changes: (02/28/2016 - BPS - Schmalz Haus)
+* Added OSHW logo to the bottom silk layer
+* Added RoSH symbol to the bottom silk layer
+* Added "http://engineering3.org" and "RoSH Compliant" to bottom silk layer
+* Updated rev text on top silk
+* Updated copyright dates to 2016 on schematic and board silk
+
+Updated to v05 with the following changes: (11/29/2016 - BPS - Schmalz Haus)
+* Fixed pin one silk screen for J7 (ICSP header)
