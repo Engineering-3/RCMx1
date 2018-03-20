@@ -158,7 +158,7 @@
 <wire x1="85.344" y1="54.864" x2="85.344" y2="53.594" width="0.254" layer="21"/>
 <wire x1="85.471" y1="40.259" x2="85.471" y2="38.989" width="0.254" layer="21"/>
 <wire x1="76.708" y1="61.849" x2="76.708" y2="60.579" width="0.254" layer="21"/>
-<wire x1="21.082" y1="75.438" x2="22.225" y2="75.438" width="0.254" layer="21"/>
+<wire x1="10.922" y1="75.438" x2="12.065" y2="75.438" width="0.254" layer="21"/>
 <circle x="56.261" y="45.339" radius="0.2839" width="0.254" layer="21"/>
 <text x="71.5264" y="56.769" size="1.4224" layer="21" rot="R90">J3</text>
 <text x="64.008" y="60.579" size="1.4224" layer="21" rot="R270">1</text>
@@ -172,7 +172,7 @@
 <text x="73.025" y="9.398" size="1.27" layer="21" rot="SR0.6">SDA</text>
 <text x="72.898" y="6.858" size="1.27" layer="21" rot="SR0.6">SCL</text>
 <text x="72.771" y="4.191" size="1.27" layer="21" rot="SR0">GND</text>
-<text x="3.0734" y="17.526" size="2.286" layer="21" rot="SR90">E^3 RCMx1 v4</text>
+<text x="3.0734" y="17.526" size="2.286" layer="21" rot="SR90">E^3 RCMx1 v5</text>
 <text x="3.81" y="52.324" size="2.54" layer="21" font="vector" ratio="14" rot="R90">-</text>
 <text x="4.2164" y="52.07" size="2.54" layer="21">+</text>
 <text x="56.769" y="75.4888" size="1.6764" layer="21" rot="SR90">21</text>
