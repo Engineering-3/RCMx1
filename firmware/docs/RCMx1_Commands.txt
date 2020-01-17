@@ -124,6 +124,17 @@ GPIO control (PN23 to PN28)
     
     
 RC Servo Control (PN1 to PN8)
+    The RC Servo outputs are sequenced from PN1 to PN8 in order. Each rising
+    edge is 3ms after the previous channel. The pulses can go from 1.0ms
+    (with a value of 0x01 in the position register) to 2.0ms (with a value of 
+    0xFF in the position register) on each channel independently. The entire 
+    set of eight outputs repeats every 25ms. By setting the position register
+    value to 0x00, that channel's output is disabled, but this does not
+    affect the other channel's timing.
+    
+    The RC servo output pulse control is not double buffered, so changing a 
+    channel's position register value while that channel is outputting a pulse
+    may result in one runt pulse of an unexpected width.
 
     0x20: RC Servo GPIO data values                          1 byte, read/write
         Read: Byte1: RC Servo digital input PN1 to PN8 - Reads RC Servo 1 
@@ -169,7 +180,10 @@ RC Servo Control (PN1 to PN8)
         Read/Write: Byte1: RC servo filter enable bits 1-8
         
     0x31 through 0x38: RC Servo positions                    1 byte, read/write
-        0x00 = coast, 0x01 = full CW, 0x80 = stop, 0xFF = full CCW
+        0x00 = coast (no pulse)
+        0x01 = full CW (1.0ms pulse)
+        0x80 = stop (1.5ms pulse)
+        0xFF = full CCW (2.0ms pulse)
         
         Read/Write: Byte1: RC Servo position output 
         
