@@ -1,9 +1,9 @@
 RCMx1
 ========================
 
-![RCMx1](http://engineering3.org/wp-content/uploads/2015/02/RCMx1_small.jpg)
+![RCMx1](http://engineering3.org/wp-content/uploads/GitHub/RCMx1.jpg)
 
-This is an interface board for the RCM Control Stack that accommodates inputs (sensors) and outputs (motors, servos, LEDs) and communication through UART, SPI and I2C. Please see [Engineering^3](http://engineering3.com/) for more information on the complete RCM Control Stack project.
+This is an interface board for the RCM Control Stack that accommodates inputs (sensors) and outputs (motors, servos, LEDs) and communication through UART, SPI and I2C. Please see [Engineering3](http://engineering3.org/) for more information on the complete RCM Control Stack project.
 
 
 Repository Contents
@@ -28,5 +28,5 @@ Distributed as-is; no warranty is given.
 
 Getting Started Help
 --------------------
-Follow the [RCMx1 User Guide](https://github.com/Engineering-3/RCMx1/blob/master/firmware/docs/RCMx1%20User%20Guide.doc?raw=true) here in the repo.
+Follow the [RCMx1 User Guide](https://github.com/Engineering-3/RCMx1/blob/master/firmware/docs/RCMx1%20User%20Guide.doc) here in the repo.
 
